@@ -17,5 +17,12 @@ wsl则是既能够再Windows和Linux系统切换方便，而且可以很便捷�
 
 # python c/c++与ROS2环境的安装
 -python有conda和uv两种环境要选，其中conda可以同时管理python包和非python底层库，但是解析安装速度慢；uv则是由RUST语言编写的，安装编译速度快，但是由于conda在激活后会修改系统路径，所以可能会与ROS2编译时的python解释器冲突，所以不采用。
+
 -c/c++与ROS2按照题目要求的版本安装。
-    -由于我本身用的是wsl，所以vscode只在windows系统里安装，然后安装插件远程连接到wsl2。
+
+-由于我本身用的是wsl，所以vscode只在windows系统里安装，然后安装插件远程连接到wsl2。
+
+# git的使用与ssh
+-学习了github以及git的工作流和相关指令，学会了http以及ssh连接远程仓库。
+
+-学习了ssh的相关用法，并利用舍友的电脑做了一次ssh远程连接的相关尝试，成功在它的桌面上创建文件夹并使用scp传输文件。随后尝试了ssh免密登录。
