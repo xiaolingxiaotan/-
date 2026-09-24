@@ -134,6 +134,7 @@ def numpy_verity(xs,ys,r):
     else:
         print("numpy验证失败 r=",r,"r_np=",r_np)
 
+# 主函数调用层
 def main():
     try:
         CONFIG_PATH=PATH_Setting()
@@ -147,7 +148,7 @@ def main():
         r = r_calc(xs,ys,n)
         numpy_verity(xs,ys,r)
         data_print(xs,ys,n,r)
-        
+
     except KeyError as e:
         print(f"错误：列不存在：{e}")
         sys.exit(2)
