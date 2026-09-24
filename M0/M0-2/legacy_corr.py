@@ -3,6 +3,7 @@ import yaml
 import csv
 import math
 import argparse
+import numpy as np
 
 #设置路径
 def PATH_Setting():
@@ -63,11 +64,22 @@ def r_calc(xs,ys,n):
     return r
 
 # 打印出数据
-def data_print(xs,ys,n):
+def data_print(xs,ys,n,r):
     print("n =", n)
     print("mean_x =", mean(xs,ys,n)[0])
     print("mean_y =", mean(xs,ys,n)[1])
-    print("r =",r_calc(xs,ys,n) )
+    print("r =",r )
+
+def numpy_verity(xs,ys,r):
+    arr_x = np.array(xs)
+    arr_y = np.array(ys)
+    corr_matrix = np.corrcoef(arr_x, arr_y)
+    r_np = corr_matrix[0, 1]
+    diff = abs(r - r_np)
+    if diff < 1e-6:
+        print("numpy验证成功 两者误差不超过1e-6")
+    else:
+        print("numpy验证失败 r=",r,"r_np=",r_np)
 
 def main():
     CONFIG_PATH=PATH_Setting()
@@ -75,8 +87,9 @@ def main():
     ys = []
     Data_analysis(xs,ys,CONFIG_PATH)
     n = len(xs)
-    r_calc(xs,ys,n)
-    data_print(xs,ys,n)
+    r = r_calc(xs,ys,n)
+    numpy_verity(xs,ys,r)
+    data_print(xs,ys,n,r)
 
 if __name__ == "__main__":
     main()
