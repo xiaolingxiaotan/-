@@ -18,6 +18,7 @@ import math
 import argparse
 import numpy as np
 import sys
+import matplotlib.pyplot as plt
 
 #设置路径
 def PATH_Setting():
@@ -80,7 +81,7 @@ def Data_analysis(xs,ys,CONFIG_PATH):
     except UnicodeDecodeError:
         print(f"错误：csv文件 {csv_path} 编码不是UTF-8")
         sys.exit(3)
-    return n
+    return n, col_x,col_y 
 
 # 求和x与y
 def sum(xs,ys,n):
@@ -116,11 +117,23 @@ def r_calc(xs,ys,n):
     return r
 
 # 打印出数据
-def data_print(xs,ys,n,r):
+def data_print(xs,ys,n,r,CONFIG_PATH):
+    col_x=  Data_analysis(xs,ys,CONFIG_PATH)[1]
+    col_y=  Data_analysis(xs,ys,CONFIG_PATH)[2]
     print("n =", n)
     print("mean_x =", mean(xs,ys,n)[0])
     print("mean_y =", mean(xs,ys,n)[1])
     print("r =",r )
+    plt.figure(figsize=(6,4))
+    plt.scatter(xs, ys, color="blue", label="data points")
+    plt.xlabel(col_x)
+    plt.ylabel(col_y)
+    plt.title("x-y scatter plot")
+    plt.legend()
+    plt.grid(alpha=0.3)
+    plt.savefig("corr_plot.png", dpi=200, bbox_inches="tight")
+    plt.close()
+    print("图片已保存为 corr_plot.png")
 
 # numpy的验证函数
 def numpy_verity(xs,ys,r):
@@ -147,7 +160,7 @@ def main():
             sys.exit(3)
         r = r_calc(xs,ys,n)
         numpy_verity(xs,ys,r)
-        data_print(xs,ys,n,r)
+        data_print(xs,ys,n,r,CONFIG_PATH)
 
     except KeyError as e:
         print(f"错误：列不存在：{e}")
