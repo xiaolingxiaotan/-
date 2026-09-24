@@ -2,10 +2,17 @@
 import yaml
 import csv
 import math
+import argparse
 
 #设置路径
-CONFIG_PATH = "config.yaml"
-
+def PATH_Setting()
+    parser = argparse.ArgumentParser(description="分析csv文件并算出相关系数")
+    parser.add_argument("-c", "--config", help="yaml配置文件路径")
+    parser.add_argument("config_path",nargs="?",help="配置文件位置参数")
+    args = parser.parse_args()
+    return args
+                    
+#解析数据函数
 with open(CONFIG_PATH) as f:
     cfg = yaml.safe_load(f)       #解析基础类型：字典、列表、数字、字符串、bool、null
 
