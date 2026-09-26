@@ -55,9 +55,10 @@ def std_calc(mean):
     std = math.sqrt(acc / len(data))
 
 # --- 剔除离群值 ---
-for v in data:
-    if v > mean + 2 * std:
-        data.remove(v)
+def remove_outliers(mean,std):
+    for v in data:
+        if v > mean + 2 * std or v < mean - 2* std:
+            data.remove(v)
 
 # --- 输出清洗后的数据 ---
 script_dir = os.path.dirname(os.path.abspath(__file__))
