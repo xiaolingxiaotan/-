@@ -57,8 +57,11 @@ for v in data:
         data.remove(v)
 
 # --- 输出清洗后的数据 ---
-output_path = os.path.join("/", OUTPUT_DIR, OUTPUT_FILE)
-f = open(output_path, "w")
+script_dir = os.path.dirname(os.path.abspath(__file__))
+out_path = os.path.join(script_dir, OUTPUT_DIR,"cleaned.csv")
+out_dir = os.path.dirname(out_path)
+os.makedirs(out_dir, exist_ok=True)
+f = open(out_path, "w")
 writer = csv.writer(f)
 writer.writerow(["time", "value"])
 for v in cleaned:
@@ -67,4 +70,4 @@ for v in cleaned:
 print("均值 mean = %.4f" % mean)
 print("标准差 std = %.4f" % std)
 print("清洗后剩余 %d 条" % len(cleaned))
-print("已保存到 %s" % output_path)
+print("已保存到 %s" % out_path)
