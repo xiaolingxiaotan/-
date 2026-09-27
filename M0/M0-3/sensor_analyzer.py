@@ -16,11 +16,24 @@ sensor_analyzer.py  —— 上一届学长留下的"能用"的脚本
 现状：跑不通 / 跑出来数不对。就交给你了。
 """
 
+"""
+退出码约定：(沿用M0-2)
+0 ———— 代码无异常
+1 ———— IO / 文件相关
+2 ———— 字典、索引、取值类
+3 ———— 数值、计算类
+4 ———— 类型相关
+5 ———— 导入、模块相关
+6 ———— 语法、运行基础类
+7 ———— 用户中断
+8 ———— 第三方库自定义异常
+"""
+
 import csv
 import os
 import math
 import argparse
-import os
+import sys
 
 # --- 路径读取 ---
 def path_setting():
@@ -37,13 +50,14 @@ def path_setting():
 # --- 读取数据 ---
 def reader(times,data,INPUT_FILE):
     print("=== 传感器数据分析 ===")
-    reader = csv.DictReader(open(INPUT_FILE, "r"))
+    with open(INPUT_FILE, "r") as f:
+        reader = csv.DictReader(open(INPUT_FILE, "r"))
 
-    for row in reader:
-        t = float(row["time"])
-        v = float(row["value"])
-        times.append(t)
-        data.append(v)
+        for row in reader:
+            t = float(row["time"])
+            v = float(row["value"])
+            times.append(t)
+            data.append(v)
 
     print("共读取 %d 条数据" % len(data))
 
@@ -72,16 +86,14 @@ def remove_outliers(mean,std,times,data,cleaned):
             cleaned.append( [t, v] )
 
 # --- 输出清洗后的数据 ---
-def result_output(cleaned,OUTPUT_DIR):
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    out_path = os.path.join(script_dir, OUTPUT_DIR,"cleaned.csv")
+def result_output(cleaned,OUTPUT_FILE):
+    out_path = OUTPUT_FILE
     out_dir = os.path.dirname(out_path)
     os.makedirs(out_dir, exist_ok=True)
-    f = open(out_path, "w")
-    writer = csv.writer(f)
-    writer.writerow(["time", "value"])
-    for v in cleaned:
-        writer.writerow([v])
+    with open(out_path, "w", newline="", encoding="utf-8") as f:
+        writer = csv.writer(f)
+        writer.writerow(["time", "value"])
+        writer.writerows(cleaned)
     return out_path
 
 def result_print(mean,std,cleaned,out_path):
@@ -96,13 +108,38 @@ def main():
     times = []
     cleaned = []
     reader(times,data,INPUT_FILE)
+    if len(data) == 0:
+        print("错误：读取到0条有效数据，无法计算")
+        sys.exit(3)
     mean=mean_calc(data)
     std=std_calc(mean,data)
     remove_outliers(mean,std,times,data,cleaned)
-    out_path = result_output(cleaned,OUTPUT_DIR)
+    out_path = result_output(cleaned,OUTPUT_FILE)
     result_print(mean,std,cleaned,out_path)
 
 if __name__ == "__main__":
-    main()
-    
+    try:
+        main()
+        sys.exit(0)
+    except FileNotFoundError:
+        print(f"错误：输入文件不存在")
+        sys.exit(1)
+    except PermissionError:
+        print("错误：文件权限不足，无法读写")
+        sys.exit(1)
+    except KeyError as e:
+        print(f"错误：CSV文件缺少列：{e}，需要time、value列")
+        sys.exit(2)
+    except ZeroDivisionError:
+        print("错误：数据为空，除法计算失败")
+        sys.exit(3)
+    except ValueError:
+        print("错误：CSV内存在无法转为数字的内容")
+        sys.exit(4)
+    except KeyboardInterrupt:
+        print("\n程序被用户手动中断")
+        sys.exit(7)
+    except Exception as e:
+        print(f"未知错误：{e}")
+        sys.exit(8)
 
