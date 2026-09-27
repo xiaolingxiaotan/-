@@ -19,13 +19,23 @@ sensor_analyzer.py  —— 上一届学长留下的"能用"的脚本
 import csv
 import os
 import math
-INPUT_FILE = "sensor_data.csv"
-OUTPUT_FILE = "cleaned_data.csv"
-OUTPUT_DIR = "out"  # 输出目录
+import argparse
+import os
 
+# --- 路径读取 ---
+def path_setting():
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    parser = argparse.ArgumentParser(description="传感器数据清洗")
+    parser.add_argument("--input", default="sensor_data.csv", help="输入csv路径，默认当前目录sensor_data.csv")
+    parser.add_argument("--output", default="cleaned_data.csv", help="输出csv路径，默认当前目录cleaned_data.csv")
+    args = parser.parse_args()
+    INPUT_FILE = os.path.join(script_dir, args.input)
+    OUTPUT_DIR = os.path.join(script_dir, "out")
+    OUTPUT_FILE = os.path.join(OUTPUT_DIR, args.output)
+    return INPUT_FILE,OUTPUT_DIR, OUTPUT_FILE 
 
 # --- 读取数据 ---
-def reader(times,data):
+def reader(times,data,INPUT_FILE):
     print("=== 传感器数据分析 ===")
     reader = csv.DictReader(open(INPUT_FILE, "r"))
 
@@ -62,7 +72,7 @@ def remove_outliers(mean,std,times,data,cleaned):
             cleaned.append( [t, v] )
 
 # --- 输出清洗后的数据 ---
-def result_output(cleaned):
+def result_output(cleaned,OUTPUT_DIR):
     script_dir = os.path.dirname(os.path.abspath(__file__))
     out_path = os.path.join(script_dir, OUTPUT_DIR,"cleaned.csv")
     out_dir = os.path.dirname(out_path)
@@ -81,14 +91,15 @@ def result_print(mean,std,cleaned,out_path):
     print("已保存到 %s" % out_path)
 
 def main():
+    INPUT_FILE,OUTPUT_DIR,OUTPUT_FILE=path_setting()
     data = []
     times = []
     cleaned = []
-    reader(times,data)
+    reader(times,data,INPUT_FILE)
     mean=mean_calc(data)
     std=std_calc(mean,data)
     remove_outliers(mean,std,times,data,cleaned)
-    out_path = result_output(cleaned)
+    out_path = result_output(cleaned,OUTPUT_DIR)
     result_print(mean,std,cleaned,out_path)
 
 if __name__ == "__main__":
