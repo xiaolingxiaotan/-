@@ -54,10 +54,12 @@ def std_calc(mean,data):
     return std
 
 # --- 剔除离群值 ---
-def remove_outliers(mean,std,data):
-    for v in data:
-        if v > mean + 2 * std or v < mean - 2* std:
-            data.remove(v)
+def remove_outliers(mean,std,times,data,cleaned):
+    for i in range(len(data)):
+        v = data[i]
+        t = times[i]
+        if abs(v - mean) <= std*2:
+            cleaned.append( [t, v] )
 
 # --- 输出清洗后的数据 ---
 def result_output(cleaned):
@@ -85,7 +87,7 @@ def main():
     reader(times,data)
     mean=mean_calc(data)
     std=std_calc(mean,data)
-    remove_outliers(mean,std,data)
+    remove_outliers(mean,std,times,data,cleaned)
     out_path = result_output(cleaned)
     result_print(mean,std,cleaned,out_path)
 
