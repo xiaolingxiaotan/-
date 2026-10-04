@@ -47,7 +47,7 @@ def file_getting(CONFIG_PATH,timeout):
         choice=os.path.splitext(CONFIG_PATH)[1].lower() # 将路径的后缀提取出来并转为小写
         if choice in(".yaml",".yml"):
             data=yaml.safe_load(f)
-        elif choice == "json":
+        elif choice == ".json":
             data = json.load(f)
         else:
             print("配置文件格式不对")
@@ -166,7 +166,6 @@ def task_goingon(TIME_OUT,tasks,task_list,SEED,conlock,task_status,has_new_event
             if dep not in total_status or total_status[dep]["status"] != "SUCCESS":
                 all_dep_ok = False
                 break
-        print(f"DEBUG: 当前任务{t}, all_dep_ok={all_dep_ok}, global_timeout={global_timeout}")
         # 依赖任务成功执行且前一个任务未超时
         if all_dep_ok and global_timeout == False:
             task_status.update(default)
@@ -189,7 +188,6 @@ def task_goingon(TIME_OUT,tasks,task_list,SEED,conlock,task_status,has_new_event
                 timeout = False
                 has_new_event[0] = True
                 conlock.notify_all()
-                print(f"[SKIP_DEBUG] 已经触发notify_all，任务 {t}，状态SKIPPED")
             total_status[t] = task_status.copy()  
 
         # 前一个任务已超时
@@ -289,7 +287,19 @@ def logging_print(task_status,conlock,stop_flag,has_new_event):
                 logging.info(f"任务 {name} 依赖不满足，任务跳过，状态：SKIPPED")
             elif status == "TIMEOUT":
                 logging.error(f"任务 {name} 全局超时终止,状态：TIMEOUT")
-            
+
+def report_out(REPORT_PATH,total_status,total_duration,global_timeout):
+    report = {"timeout":global_timeout,"total_duration":total_duration["time"],"tasks":list(total_status.values())}
+    with open(REPORT_PATH,"w",encoding="utf-8") as f:
+        choice=os.path.splitext(REPORT_PATH)[1].lower() # 将路径的后缀提取出来并转为小写
+        if choice in(".yaml",".yml"):
+            yaml.safe_dump(report,f,encoding="utf-8")
+        elif choice == ".json":
+            json.dump(report,f,indent=2,ensure_ascii=False)
+        else:
+            print("配置文件格式不对")
+            sys.exit(1)
+
 def main():
     # 初始化logging
     logger = logging.getLogger()
@@ -316,7 +326,8 @@ def main():
         stop_flag[0] = True
         conlock.notify_all()
     log.join() 
-    # 等待日志线程正常结束，再退出main
-
+    report_out(REPORT_PATH,total_status,total_duration,global_timeout)
+    
 if __name__ == "__main__":
     main()
+    
