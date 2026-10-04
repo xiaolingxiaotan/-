@@ -309,24 +309,44 @@ def main():
     handler.setFormatter(formatter)
     logger.addHandler(handler)
 
-    CONFIG_PATH,global_timeout,REPORT_PATH,SEED=scheduler_init()
-    TIME_OUT,tasks=file_getting(CONFIG_PATH,global_timeout)
-    task_list=kahn(tasks)
-    task_status = {"name":None,"status":None,"attempts":0,"duration":0.0,"started_at": 0,"ended_at": 0}
-    conlock = threading.Condition(lock= None)
-    stop_flag = [False]
-    has_new_event = [False]
-    log=threading.Thread(target=logging_print,name=None,args=(task_status,conlock,stop_flag,has_new_event),daemon=False)
-    log.start()
-    global_timeout,total_status,total_duration = task_goingon(TIME_OUT,tasks,task_list,SEED,conlock,task_status,has_new_event)
-    with conlock:
-        while has_new_event[0]:
-            conlock.wait()
-    with conlock:
-        stop_flag[0] = True
-        conlock.notify_all()
-    log.join() 
-    report_out(REPORT_PATH,total_status,total_duration,global_timeout)
+    try:
+        CONFIG_PATH,global_timeout,REPORT_PATH,SEED=scheduler_init()
+        TIME_OUT,tasks=file_getting(CONFIG_PATH,global_timeout)
+        task_list=kahn(tasks)
+        task_status = {"name":None,"status":None,"attempts":0,"duration":0.0,"started_at": 0,"ended_at": 0}
+        conlock = threading.Condition(lock= None)
+        stop_flag = [False]
+        has_new_event = [False]
+        log=threading.Thread(target=logging_print,name=None,args=(task_status,conlock,stop_flag,has_new_event),daemon=False)
+        log.start()
+        global_timeout,total_status,total_duration = task_goingon(TIME_OUT,tasks,task_list,SEED,conlock,task_status,has_new_event)
+        with conlock:
+            while has_new_event[0]:
+                conlock.wait()
+        with conlock:
+            stop_flag[0] = True
+            conlock.notify_all()
+        log.join() 
+        report_out(REPORT_PATH,total_status,total_duration,global_timeout)
+
+    except FileNotFoundError:
+        logging.error("异常：找不到配置文件，请检查--config路径")
+    except yaml.YAMLError:
+        logging.error("异常：yaml配置文件解析失败，格式错误")
+    except json.JSONDecodeError:
+        logging.error("异常：json配置文件解析失败，格式错误")
+    except ValueError as e:
+        logging.error(f"值异常：{e}")
+    except KeyboardInterrupt:
+        logging.warning("收到Ctrl+C中断，准备退出")
+    except Exception as e:
+        logging.error(f"未知运行异常: {type(e).__name__}: {e}", exc_info=True)
+    finally:
+        if conlock is not None and log is not None and log.is_alive():
+            with conlock:
+                stop_flag[0] = True
+                conlock.notify_all()
+            log.join()
     
 if __name__ == "__main__":
     main()

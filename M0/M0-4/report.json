@@ -7,56 +7,56 @@
       "status": "SUCCESS",
       "attempts": 1,
       "duration": 0.5,
-      "started_at": 1791102478.3849294,
-      "ended_at": 1791102478.384931
+      "started_at": 1791103451.8821335,
+      "ended_at": 1791103451.8821356
     },
     {
       "name": "Navigate",
       "status": "SUCCESS",
       "attempts": 1,
       "duration": 2.5,
-      "started_at": 1791102478.9084334,
-      "ended_at": 1791102478.9084346
+      "started_at": 1791103452.399004,
+      "ended_at": 1791103452.399007
     },
     {
       "name": "DetectQR",
       "status": "SUCCESS",
       "attempts": 1,
       "duration": 1.5,
-      "started_at": 1791102481.4259968,
-      "ended_at": 1791102481.4259987
+      "started_at": 1791103454.9292881,
+      "ended_at": 1791103454.9292908
     },
     {
       "name": "AvoidObstacle",
       "status": "SUCCESS",
       "attempts": 1,
       "duration": 2.0,
-      "started_at": 1791102482.9362972,
-      "ended_at": 1791102482.936299
+      "started_at": 1791103456.4605367,
+      "ended_at": 1791103456.4605386
     },
     {
       "name": "Grasp",
       "status": "SUCCESS",
       "attempts": 1,
       "duration": 1.0,
-      "started_at": 1791102483.1597607,
-      "ended_at": 1791102483.1597636
+      "started_at": 1791103458.4644697,
+      "ended_at": 1791103458.4644718
     },
     {
       "name": "Place",
       "status": "SUCCESS",
       "attempts": 1,
       "duration": 1.0,
-      "started_at": 1791102484.1756027,
-      "ended_at": 1791102484.1756048
+      "started_at": 1791103459.4935946,
+      "ended_at": 1791103459.493597
     },
     {
       "name": "ReturnHome",
       "status": "SUCCESS",
       "attempts": 1,
       "duration": 2.5,
-      "started_at": 1791102485.190963,
-      "ended_at": 1791102485.1909647
+      "started_at": 1791103460.5001872,
+      "ended_at": 1791103460.500192
     }
   ]
 }
