@@ -8,6 +8,7 @@ import random
 import threading
 import time
 import logging
+from collections import deque
 
 # 定义日志颜色类
 class ColoredFormatter(logging.Formatter):        #logging.Formatter是日志格式化器的基类
@@ -118,37 +119,34 @@ def kahn_cycle_detection(task_list,all_names,out_edges):
     if len(task_list) == len(all_names):
         print("=== 未检测到有向环 ===")
         return
-    else:    #进行DFS找环
-        visited = set(task_list)
-        in_stack = set()
-        path = []
-        cycle = None
-        for u in all_names:
-            if u not in visited:
-                DFS(visited,in_stack,path,cycle,u,out_edges)
+    # 拓扑排序没能排出全部任务，说明剩下的部分里一定有环，交给DFS找出来
+    visited = set(task_list)    # 已处理完的节点，可直接剪枝
+    in_stack = set()            # 当前递归路径上的节点
+    path = []
+    for u in all_names:
+        if u not in visited:
+            DFS(visited,in_stack,path,u,out_edges)
             
 # 辅助函数，递归DFS搜索
-def DFS(visited,in_stack,path,cycle,u,out_edges):
-    if u in visited:
-        return
+def DFS(visited,in_stack,path,u,out_edges):
     if u in in_stack:
         idx = path.index(u)
-        cycle = path[idx:]
-        cycle.append(u)
-        raise ValueError(cycle)
+        raise ValueError(path[idx:] + [u])
+    if u in visited:
+        return
     in_stack.add(u)
     path.append(u)
     visited.add(u)
     try:
         for dp in out_edges[u]:
-            DFS(visited,in_stack,path,cycle,dp,out_edges)
+            DFS(visited,in_stack,path,dp,out_edges)
      # 回溯，便于递归下一个路径回路
     finally:
         in_stack.remove(u)
         path.pop()
 
 # 任务调度器        
-def task_goingon(TIME_OUT,tasks,task_list,SEED,conlock,task_status,has_new_event):
+def task_goingon(TIME_OUT,tasks,task_list,SEED,conlock,task_status,log_queue):
     if SEED is None:
         rad = random.Random()
     else:
@@ -168,8 +166,9 @@ def task_goingon(TIME_OUT,tasks,task_list,SEED,conlock,task_status,has_new_event
                 break
         # 依赖任务成功执行且前一个任务未超时
         if all_dep_ok and global_timeout == False:
-            task_status.update(default)
-            timeout=last_success(rad,conlock,task_status,default,ntk,t,TIME_OUT,total_duration,has_new_event)
+            with conlock:
+                task_status.update(default)
+            timeout=last_success(rad,conlock,task_status,default,ntk,t,TIME_OUT,total_duration,log_queue)
             if timeout:
                 global_timeout = True
             total_status[t] = task_status.copy()
@@ -186,7 +185,7 @@ def task_goingon(TIME_OUT,tasks,task_list,SEED,conlock,task_status,has_new_event
                 total_duration["time"] += 0
                 task_status["status"] = "SKIPPED"
                 timeout = False
-                has_new_event[0] = True
+                log_queue.append(task_status.copy())
                 conlock.notify_all()
             total_status[t] = task_status.copy()  
 
@@ -202,7 +201,7 @@ def task_goingon(TIME_OUT,tasks,task_list,SEED,conlock,task_status,has_new_event
                 total_duration["time"] += 0
                 task_status["status"] = "TIMEOUT"
                 timeout = True
-                has_new_event[0] = True
+                log_queue.append(task_status.copy())
                 conlock.notify_all()
             total_status[t] = task_status.copy() 
 
@@ -215,64 +214,73 @@ def name_to_task(tasks):
     return ntk
 
 # 辅助函数：依赖函数正常执行时操作
-def last_success(rad,conlock,task_status,default,ntk,t,TIME_OUT,total_duration,has_new_event):
+def last_success(rad,conlock,task_status,default,ntk,t,TIME_OUT,total_duration,log_queue):
     max_retry = 3
     for attempt in range(1, max_retry+1):
         task_finished = False
-        ret_timeout = False
+        # 剩余额度：本任务最多只睡到这条线为止
+        remaining = TIME_OUT - total_duration["time"]
+        sleep_for = min(ntk[t]["duration"], remaining)
+        if sleep_for < 0:
+            sleep_for = 0
+        # 睡不满计划时长，说明这一次尝试撞上了全局上限
+        time_is_up = sleep_for < ntk[t]["duration"]
         with conlock:
             task_status["name"] = t
             task_status["attempts"] = attempt
             task_status["duration"] = ntk[t]["duration"]
             task_status["started_at"] = time.time()
-            r = rad.random()
-            if r <= ntk[t]["success_rate"]:
-                # 任务成功
+            if time_is_up:
+                # 撞线：本任务到此为止，直接判超时，不再重试
                 task_status["ended_at"] = time.time()
-                total_duration["time"] += task_status["duration"]
-                if total_duration["time"] > TIME_OUT:
-                    task_status["status"] = "TIMEOUT"
-                    ret_timeout = True
-                else:
-                    task_status["status"] = "SUCCESS"
-                    ret_timeout = False
-                has_new_event[0] = True
+                task_status["status"] = "TIMEOUT"
+                log_queue.append(task_status.copy())
                 conlock.notify_all()
-                task_finished = True
             else:
-                # 失败，判断是否还能重试
-                if attempt < max_retry:
-                    task_status["status"] = "RETRY"
-                    has_new_event[0] = True
+                r = rad.random()
+                if r <= ntk[t]["success_rate"]:
+                    # 任务成功
+                    task_status["ended_at"] = time.time()
+                    task_status["status"] = "SUCCESS"
+                    log_queue.append(task_status.copy())
                     conlock.notify_all()
+                    task_finished = True
                 else:
-                    # 3次全部失败
-                    task_status["status"] = "FAILED"
-                    has_new_event[0] = True
-                    conlock.notify_all()
-        time.sleep(task_status["duration"])
+                    # 失败，判断是否还能重试
+                    if attempt < max_retry:
+                        task_status["status"] = "RETRY"
+                        log_queue.append(task_status.copy())
+                        conlock.notify_all()
+                    else:
+                        # 3次全部失败
+                        task_status["status"] = "FAILED"
+                        log_queue.append(task_status.copy())
+                        conlock.notify_all()
+        # 只睡到上限：撞线时刚好睡到 timeout 为止
+        time.sleep(sleep_for)
+        # 每次实际 sleep 都累加耗时，并把总值钳制在上限内
+        total_duration["time"] = min(TIME_OUT, total_duration["time"] + sleep_for)
+        if time_is_up:
+            return True
         if task_finished:
-            return ret_timeout
+            return False
     return False
 
 
             
 # 打印日志函数
-def logging_print(task_status,conlock,stop_flag,has_new_event):
+def logging_print(task_status,conlock,stop_flag,log_queue):
     while True:
         snap = None
         with conlock:
             # 等待：要么停止，要么有新事件
-            while (not stop_flag[0]) and (not has_new_event[0]):
+            while (not stop_flag[0]) and (len(log_queue) == 0):
                 conlock.wait(timeout=0.1)
             # 退出条件
-            if stop_flag[0]:
+            if stop_flag[0] and len(log_queue) == 0:
                 break
-            # 有新事件，复制快照，清除事件标记
-            if has_new_event[0]:
-                snap = task_status.copy()
-                has_new_event[0] = False
-                conlock.notify_all()
+            snap = log_queue.popleft() 
+            conlock.notify_all()
         if snap is not None:
             name = snap["name"]
             status = snap["status"]
@@ -299,6 +307,7 @@ def report_out(REPORT_PATH,total_status,total_duration,global_timeout):
         else:
             print("配置文件格式不对")
             sys.exit(1)
+    print("=== report导出成功 ===")
 
 def main():
     # 初始化logging
@@ -309,6 +318,9 @@ def main():
     handler.setFormatter(formatter)
     logger.addHandler(handler)
 
+    # 新增定义，防止finally检测不到变量报错
+    conlock = None
+    log = None
     try:
         CONFIG_PATH,global_timeout,REPORT_PATH,SEED=scheduler_init()
         TIME_OUT,tasks=file_getting(CONFIG_PATH,global_timeout)
@@ -316,12 +328,12 @@ def main():
         task_status = {"name":None,"status":None,"attempts":0,"duration":0.0,"started_at": 0,"ended_at": 0}
         conlock = threading.Condition(lock= None)
         stop_flag = [False]
-        has_new_event = [False]
-        log=threading.Thread(target=logging_print,name=None,args=(task_status,conlock,stop_flag,has_new_event),daemon=False)
+        log_queue = deque()
+        log=threading.Thread(target=logging_print,name=None,args=(task_status,conlock,stop_flag,log_queue),daemon=False)
         log.start()
-        global_timeout,total_status,total_duration = task_goingon(TIME_OUT,tasks,task_list,SEED,conlock,task_status,has_new_event)
+        global_timeout,total_status,total_duration = task_goingon(TIME_OUT,tasks,task_list,SEED,conlock,task_status,log_queue)
         with conlock:
-            while has_new_event[0]:
+            while log_queue:
                 conlock.wait()
         with conlock:
             stop_flag[0] = True
