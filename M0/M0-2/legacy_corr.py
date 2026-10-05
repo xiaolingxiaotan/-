@@ -18,7 +18,11 @@ import math
 import argparse
 import numpy as np
 import sys
-import matplotlib.pyplot as plt
+try:
+    import matplotlib.pyplot as plt
+except ModuleNotFoundError:
+    print(f"没安装matplotlib库，请安装后再尝试运行")
+    sys.exit(8)
 
 #设置路径
 def PATH_Setting():

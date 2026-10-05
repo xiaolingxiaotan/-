@@ -10,6 +10,12 @@ import time
 import logging
 from collections import deque
 
+# 退出码约定：异常输入必须给出可读提示并以非 0 退出，且不得抛栈回溯
+EXIT_FILE   = 1     # 配置文件不存在或不可读写
+EXIT_CYCLE  = 2     # 依赖关系存在有向环
+EXIT_SYNTAX = 3     # YAML/JSON 语法错误
+EXIT_CONFIG = 4     # 配置内容非法（空任务列表、字段缺失、取值越界、依赖不存在等）
+
 # 定义日志颜色类
 class ColoredFormatter(logging.Formatter):        #logging.Formatter是日志格式化器的基类
     reset = "\033[0m"    #重置颜色
@@ -44,21 +50,73 @@ def scheduler_init():
 
 # 根据路径读取解析文件
 def file_getting(CONFIG_PATH,timeout):
+    choice=os.path.splitext(CONFIG_PATH)[1].lower() # 将路径的后缀提取出来并转为小写
+    if choice not in (".yaml",".yml",".json"):
+        logging.error(f"异常：配置文件格式不支持（{choice}），仅支持 .yaml/.yml/.json")
+        sys.exit(EXIT_CONFIG)
     with open(CONFIG_PATH,"r",encoding="utf-8") as f:
-        choice=os.path.splitext(CONFIG_PATH)[1].lower() # 将路径的后缀提取出来并转为小写
-        if choice in(".yaml",".yml"):
-            data=yaml.safe_load(f)
-        elif choice == ".json":
+        if choice == ".json":
             data = json.load(f)
         else:
-            print("配置文件格式不对")
-            sys.exit(1)
+            data = yaml.safe_load(f)
+    # 空文件、或顶层不是键值映射，都属于内容非法
+    if not isinstance(data,dict):
+        logging.error("异常：配置文件为空或顶层结构不正确，应为「timeout + tasks」的键值映射")
+        sys.exit(EXIT_CONFIG)
     if timeout == None:
-        TIME_OUT = data["timeout"]
+        TIME_OUT = data.get("timeout")
+        # timeout 在配置文件里是可选项，命令行也没给时不设上限
+        if TIME_OUT == None:
+            TIME_OUT = float("inf")
     else: 
         TIME_OUT = timeout
-    tasks = data["tasks"]
+    if isinstance(TIME_OUT,bool) or not isinstance(TIME_OUT,(int,float)) or TIME_OUT < 0:
+        logging.error(f"异常：timeout 取值非法（应为非负数）：{TIME_OUT!r}")
+        sys.exit(EXIT_CONFIG)
+    tasks = data.get("tasks")
     return TIME_OUT,tasks
+
+# 校验配置内容：非法输入要给出可读提示并非 0 退出，且不能抛栈回溯
+def config_check(tasks):
+    # 空任务列表 / tasks 缺失
+    if not isinstance(tasks,list) or len(tasks) == 0:
+        logging.error("异常：任务列表为空或缺失（tasks 至少要有 1 个任务）")
+        sys.exit(EXIT_CONFIG)
+    names = []
+    for task in tasks:
+        if not isinstance(task,dict):
+            logging.error(f"异常：任务项不是键值映射：{task!r}")
+            sys.exit(EXIT_CONFIG)
+        for field in ("name","duration","success_rate","dependencies"):
+            if field not in task:
+                logging.error(f"异常：任务缺少字段 {field}：{task!r}")
+                sys.exit(EXIT_CONFIG)
+        name = task["name"]
+        if not isinstance(name,str) or name == "":
+            logging.error(f"异常：任务名非法（应为非空字符串）：{name!r}")
+            sys.exit(EXIT_CONFIG)
+        # 任务名必须唯一，否则字典映射和状态表会互相覆盖
+        if name in names:
+            logging.error(f"异常：任务名重复：{name}")
+            sys.exit(EXIT_CONFIG)
+        names.append(name)
+        dur = task["duration"]
+        if isinstance(dur,bool) or not isinstance(dur,(int,float)) or dur < 0:
+            logging.error(f"异常：任务 {name} 的 duration 取值非法（应为非负数）：{dur!r}")
+            sys.exit(EXIT_CONFIG)
+        rate = task["success_rate"]
+        if isinstance(rate,bool) or not isinstance(rate,(int,float)) or not 0 <= rate <= 1:
+            logging.error(f"异常：任务 {name} 的 success_rate 越界（须在 0~1 之间）：{rate!r}")
+            sys.exit(EXIT_CONFIG)
+        if not isinstance(task["dependencies"],list):
+            logging.error(f"异常：任务 {name} 的 dependencies 不是列表：{task['dependencies']!r}")
+            sys.exit(EXIT_CONFIG)
+    # 依赖必须指向存在的任务，否则拓扑排序建图时会 KeyError
+    for task in tasks:
+        for dep in task["dependencies"]:
+            if dep not in names:
+                logging.error(f"异常：任务 {task['name']} 依赖了不存在的任务 {dep!r}")
+                sys.exit(EXIT_CONFIG)
 
 # Kahn算法拓扑排序
 def kahn(tasks):
@@ -95,8 +153,8 @@ def kahn(tasks):
     try:
         kahn_cycle_detection(task_list,all_names,out_edges)
     except ValueError as e:
-        print(f"捕获到有向环{e}")
-        sys.exit(2)
+        logging.error(f"异常：依赖关系存在有向环：{' -> '.join(e.args[0])}")
+        sys.exit(EXIT_CYCLE)
 
     return task_list
 
@@ -305,8 +363,8 @@ def report_out(REPORT_PATH,total_status,total_duration,global_timeout):
         elif choice == ".json":
             json.dump(report,f,indent=2,ensure_ascii=False)
         else:
-            print("配置文件格式不对")
-            sys.exit(1)
+            logging.error(f"异常：report 输出格式不支持（{choice}），仅支持 .json/.yaml/.yml")
+            sys.exit(EXIT_CONFIG)
     print("=== report导出成功 ===")
 
 def main():
@@ -324,6 +382,7 @@ def main():
     try:
         CONFIG_PATH,global_timeout,REPORT_PATH,SEED=scheduler_init()
         TIME_OUT,tasks=file_getting(CONFIG_PATH,global_timeout)
+        config_check(tasks)
         task_list=kahn(tasks)
         task_status = {"name":None,"status":None,"attempts":0,"duration":0.0,"started_at": 0,"ended_at": 0}
         conlock = threading.Condition(lock= None)
@@ -343,16 +402,28 @@ def main():
 
     except FileNotFoundError:
         logging.error("异常：找不到配置文件，请检查--config路径")
+        sys.exit(EXIT_FILE)
+    except OSError as e:
+        # 目录当文件传、无读权限等都归到这里
+        logging.error(f"异常：文件读写失败：{e}")
+        sys.exit(EXIT_FILE)
     except yaml.YAMLError:
         logging.error("异常：yaml配置文件解析失败，格式错误")
+        sys.exit(EXIT_SYNTAX)
     except json.JSONDecodeError:
+        # 注意：JSONDecodeError 是 ValueError 的子类，必须排在 ValueError 之前
         logging.error("异常：json配置文件解析失败，格式错误")
+        sys.exit(EXIT_SYNTAX)
     except ValueError as e:
         logging.error(f"值异常：{e}")
+        sys.exit(EXIT_CONFIG)
     except KeyboardInterrupt:
         logging.warning("收到Ctrl+C中断，准备退出")
+        sys.exit(130)   # 惯例：被 SIGINT 终止的进程退出码为 130
     except Exception as e:
-        logging.error(f"未知运行异常: {type(e).__name__}: {e}", exc_info=True)
+        # 这里不加 exc_info：题面要求异常输入不得抛栈回溯
+        logging.error(f"未知运行异常: {type(e).__name__}: {e}")
+        sys.exit(EXIT_CONFIG)
     finally:
         if conlock is not None and log is not None and log.is_alive():
             with conlock:
