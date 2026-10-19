@@ -1,0 +1,7 @@
+input_csv: data.csv
+columns:
+  x: temperature
+  y: humidity
+task:
+  name: corr_analysis
+  verbose: true

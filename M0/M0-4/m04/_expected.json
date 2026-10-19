@@ -1,0 +1,47 @@
+{
+  "case_dir": "/home/blake/workspaces/smartcar/22SmartCar/round1/M0/_grader/out2/m04",
+  "timeout": 6.2,
+  "names": [
+    "Grasp",
+    "Place",
+    "Lift",
+    "Check2",
+    "Init",
+    "Navigate",
+    "Scan"
+  ],
+  "deps": {
+    "Grasp": [
+      "Scan",
+      "Init"
+    ],
+    "Place": [
+      "Lift",
+      "Grasp"
+    ],
+    "Lift": [
+      "Grasp",
+      "Scan"
+    ],
+    "Check2": [],
+    "Init": [],
+    "Navigate": [
+      "Init"
+    ],
+    "Scan": [
+      "Navigate",
+      "Init"
+    ]
+  },
+  "sum_duration": 3.56,
+  "topo_example": [
+    "Check2",
+    "Init",
+    "Navigate",
+    "Scan",
+    "Grasp",
+    "Lift",
+    "Place"
+  ],
+  "expectation": "执行顺序必须满足全部依赖；前置非 SUCCESS 时下游不得为 SUCCESS；总耗时超过 timeout 后立即终止并输出 TIMEOUT"
+}

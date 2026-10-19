@@ -1,0 +1,17 @@
+{
+  "case_dir": "/home/blake/workspaces/smartcar/22SmartCar/round1/M0/_grader/out2/m02",
+  "columns": {
+    "x": "temperature",
+    "y": "humidity"
+  },
+  "n": 58,
+  "expected_r": 0.7481426826134043,
+  "edge_cases": {
+    "列名不匹配": "edge/bad_column.yaml",
+    "空 csv": "edge/empty.yaml",
+    "某列恒定(零方差)": "edge/const.yaml",
+    "单行数据": "edge/one.yaml",
+    "配置文件不存在": "edge/__missing__.yaml"
+  },
+  "expectation": "5 类边界输入都应给出可读错误并以非 0 退出，不允许抛 Traceback"
+}

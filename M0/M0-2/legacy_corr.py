@@ -15,6 +15,7 @@
 import yaml
 import csv
 import math
+import os
 import argparse
 import numpy as np
 import sys
@@ -57,6 +58,12 @@ def Data_analysis(xs,ys,CONFIG_PATH):
         sys.exit(6)
     try:
         csv_path = cfg["input_csv"]
+        # input_csv 是相对路径时，以「配置文件所在目录」为基准，而不是当前工作目录。
+        # 这样无论从哪个目录调用，都能找到配置文件旁边的数据文件。
+        if not os.path.isabs(csv_path):
+            csv_path = os.path.join(
+                os.path.dirname(os.path.abspath(CONFIG_PATH)), csv_path
+            )
         col_x = cfg["columns"]["x"]
         col_y = cfg["columns"]["y"]
     except KeyError as e:

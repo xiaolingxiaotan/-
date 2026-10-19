@@ -1,0 +1,4 @@
+input_csv: const.csv
+columns:
+  x: temperature
+  y: humidity

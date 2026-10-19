@@ -1,0 +1,6 @@
+timeout: 5
+tasks:
+- name: A
+  duration: 1
+  success_rate: 5.0
+  dependencies: []

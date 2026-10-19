@@ -1,0 +1,4 @@
+input_csv: data.csv
+columns:
+  x: no_such_col
+  y: humidity

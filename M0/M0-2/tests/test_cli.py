@@ -105,6 +105,28 @@ class TestCliSuccess(CliTestCase):
         self.assertEqual(proc.returncode, 0, proc.stderr)
         self.assertAlmostEqual(self.parse_r(proc.stdout), 1.0, places=6)
 
+    def test_csv_resolved_relative_to_config_dir(self):
+        """
+        yaml 里的 input_csv 是相对路径时，以「配置文件所在目录」为基准，
+        而不是当前工作目录——所以在别的目录启动也应该能找到 csv。
+        """
+        data_dir = os.path.join(self.tmp, "data_dir")
+        os.mkdir(data_dir)
+        with open(os.path.join(data_dir, "data.csv"), "w", encoding="utf-8") as f:
+            f.write(GOOD_CSV)
+        cfg = os.path.join(data_dir, "config.yaml")
+        with open(cfg, "w", encoding="utf-8") as f:
+            f.write(
+                'input_csv: "data.csv"\n'
+                "columns:\n"
+                '  x: "sensor_a"\n'
+                '  y: "sensor_b"\n'
+            )
+        # run_cli 的 cwd 是 self.tmp，不是 data_dir
+        proc = self.run_cli("--config", cfg)
+        self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+        self.assertAlmostEqual(self.parse_r(proc.stdout), 1.0, places=6)
+
 
 class TestCliAbnormalInput(CliTestCase):
     """

@@ -1,0 +1,7 @@
+timeout: 5
+tasks:
+- name: A
+  duration: 1
+  success_rate: 1
+  dependencies:
+  - Ghost

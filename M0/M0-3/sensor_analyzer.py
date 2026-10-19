@@ -113,6 +113,14 @@ def main():
         sys.exit(3)
     mean=mean_calc(data)
     std=std_calc(mean,data)
+    # 所有取值相同 ⟺ 标准差为 0。此时 2σ 阈值退化成 0，
+    # "超过 2 倍标准差"的判定失去意义（浮点误差还可能把点误判成离群），
+    # 这种情况不应静默输出一条"清洗成功"的结果。
+    # 用 max == min 而不是 std == 0：像 [0.1, 0.1, 0.1] 这种常数序列，
+    # 浮点累加会让 std 算成 1e-17 而不是精确的 0。
+    if max(data) == min(data):
+        print("错误：所有数据取值相同，标准差为0，无法进行离群值判定")
+        sys.exit(3)
     remove_outliers(mean,std,times,data,cleaned)
     out_path = result_output(cleaned,OUTPUT_FILE)
     result_print(mean,std,cleaned,out_path)

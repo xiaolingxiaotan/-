@@ -1,0 +1,4 @@
+input_csv: empty.csv
+columns:
+  x: temperature
+  y: humidity
