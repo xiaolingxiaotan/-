@@ -1,0 +1,119 @@
+{
+  "camera": {
+    "resolution": [
+      1920,
+      1080
+    ],
+    "circle_center": [
+      960,
+      540
+    ],
+    "circle_radius": 80,
+    "hsv_percentiles": [
+      5,
+      95
+    ]
+  },
+  "samples": [
+    {
+      "scene": "normal",
+      "scene_name": "正常室内光",
+      "pixels": 20081,
+      "mean_hsv": [
+        112.59,
+        31.03,
+        140.49
+      ],
+      "h_lo": 103.0,
+      "h_hi": 116.0,
+      "s_lo": 20.0,
+      "s_hi": 41.0,
+      "v_lo": 109.0,
+      "v_hi": 172.0,
+      "threshold": [
+        103.0,
+        20.0,
+        109.0,
+        116.0,
+        41.0,
+        172.0
+      ],
+      "hue_wraps": false
+    },
+    {
+      "scene": "strong",
+      "scene_name": "强光直射",
+      "pixels": 20081,
+      "mean_hsv": [
+        166.98,
+        5.28,
+        107.8
+      ],
+      "h_lo": 124.0,
+      "h_hi": 0.0,
+      "s_lo": 0.0,
+      "s_hi": 19.0,
+      "v_lo": 77.0,
+      "v_hi": 136.0,
+      "threshold": [
+        124.0,
+        0.0,
+        77.0,
+        0.0,
+        19.0,
+        136.0
+      ],
+      "hue_wraps": true
+    },
+    {
+      "scene": "backlight",
+      "scene_name": "逆光/背光",
+      "pixels": 20081,
+      "mean_hsv": [
+        92.2,
+        20.17,
+        125.77
+      ],
+      "h_lo": 80.0,
+      "h_hi": 0.0,
+      "s_lo": 0.0,
+      "s_hi": 39.0,
+      "v_lo": 105.0,
+      "v_hi": 155.0,
+      "threshold": [
+        80.0,
+        0.0,
+        105.0,
+        0.0,
+        39.0,
+        155.0
+      ],
+      "hue_wraps": true
+    },
+    {
+      "scene": "dusk",
+      "scene_name": "暗光/黄昏",
+      "pixels": 20081,
+      "mean_hsv": [
+        163.71,
+        9.26,
+        143.93
+      ],
+      "h_lo": 80.0,
+      "h_hi": 0.0,
+      "s_lo": 0.0,
+      "s_hi": 30.0,
+      "v_lo": 86.0,
+      "v_hi": 198.0,
+      "threshold": [
+        80.0,
+        0.0,
+        86.0,
+        0.0,
+        30.0,
+        198.0
+      ],
+      "hue_wraps": true
+    }
+  ]
+}

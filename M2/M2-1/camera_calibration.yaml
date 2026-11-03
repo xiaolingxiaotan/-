@@ -2,19 +2,19 @@ camera:
   model: pinhole
   resolution: [1920, 1080]        # 标定时的分辨率（重要！内参与分辨率绑定）
   intrinsics:
-    fx: 1307.447715
-    fy: 1305.072185
-    cx: 1008.089586
-    cy: 500.625343
+    fx: 1339.266145
+    fy: 1340.719651
+    cx: 969.781654
+    cy: 523.361085
   distortion:
-    k1: 0.070652
-    k2: -0.226246
-    p1: -0.011675
-    p2: 0.010435
-    k3: 0.164790
-  reprojection_error: 2.687581        # px
+    k1: 0.079914
+    k2: -0.329362
+    p1: -0.004905
+    p2: -0.000009
+    k3: 0.350401
+  reprojection_error: 0.474001        # px
   calib_board:
     type: chessboard
     inner_corners: [6, 9]
-    square_size_mm: 23.0          # 卡尺量出来的实际值
-  images_used: 25
+    square_size_mm: 17.0          # 卡尺量出来的实际值
+  images_used: 26

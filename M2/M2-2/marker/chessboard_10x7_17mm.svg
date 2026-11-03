@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="200.000mm" height="169.000mm"
+     viewBox="0 0 200.000 169.000">
+  <rect x="0" y="0" width="200.000" height="169.000" fill="#ffffff"/>
+  <text x="15.000" y="12.0" font-family="sans-serif" font-size="6.0"
+        font-weight="bold" fill="#000000">M2-2 CHESSBOARD TARGET</text>
+  <text x="15.000" y="20.0" font-family="sans-serif" font-size="3.4"
+        fill="#000000">10 x 7 squares | 9 x 6 inner corners | square 17.0 mm | print at 100%</text>
+  <rect x="15.000" y="30.000" width="170.000" height="119.000" fill="#ffffff"/>
+  <rect x="15.000" y="30.000" width="17.000" height="17.000" fill="#000000"/>
+  <rect x="49.000" y="30.000" width="17.000" height="17.000" fill="#000000"/>
+  <rect x="83.000" y="30.000" width="17.000" height="17.000" fill="#000000"/>
+  <rect x="117.000" y="30.000" width="17.000" height="17.000" fill="#000000"/>
+  <rect x="151.000" y="30.000" width="17.000" height="17.000" fill="#000000"/>
+  <rect x="32.000" y="47.000" width="17.000" height="17.000" fill="#000000"/>
+  <rect x="66.000" y="47.000" width="17.000" height="17.000" fill="#000000"/>
+  <rect x="100.000" y="47.000" width="17.000" height="17.000" fill="#000000"/>
+  <rect x="134.000" y="47.000" width="17.000" height="17.000" fill="#000000"/>
+  <rect x="168.000" y="47.000" width="17.000" height="17.000" fill="#000000"/>
+  <rect x="15.000" y="64.000" width="17.000" height="17.000" fill="#000000"/>
+  <rect x="49.000" y="64.000" width="17.000" height="17.000" fill="#000000"/>
+  <rect x="83.000" y="64.000" width="17.000" height="17.000" fill="#000000"/>
+  <rect x="117.000" y="64.000" width="17.000" height="17.000" fill="#000000"/>
+  <rect x="151.000" y="64.000" width="17.000" height="17.000" fill="#000000"/>
+  <rect x="32.000" y="81.000" width="17.000" height="17.000" fill="#000000"/>
+  <rect x="66.000" y="81.000" width="17.000" height="17.000" fill="#000000"/>
+  <rect x="100.000" y="81.000" width="17.000" height="17.000" fill="#000000"/>
+  <rect x="134.000" y="81.000" width="17.000" height="17.000" fill="#000000"/>
+  <rect x="168.000" y="81.000" width="17.000" height="17.000" fill="#000000"/>
+  <rect x="15.000" y="98.000" width="17.000" height="17.000" fill="#000000"/>
+  <rect x="49.000" y="98.000" width="17.000" height="17.000" fill="#000000"/>
+  <rect x="83.000" y="98.000" width="17.000" height="17.000" fill="#000000"/>
+  <rect x="117.000" y="98.000" width="17.000" height="17.000" fill="#000000"/>
+  <rect x="151.000" y="98.000" width="17.000" height="17.000" fill="#000000"/>
+  <rect x="32.000" y="115.000" width="17.000" height="17.000" fill="#000000"/>
+  <rect x="66.000" y="115.000" width="17.000" height="17.000" fill="#000000"/>
+  <rect x="100.000" y="115.000" width="17.000" height="17.000" fill="#000000"/>
+  <rect x="134.000" y="115.000" width="17.000" height="17.000" fill="#000000"/>
+  <rect x="168.000" y="115.000" width="17.000" height="17.000" fill="#000000"/>
+  <rect x="15.000" y="132.000" width="17.000" height="17.000" fill="#000000"/>
+  <rect x="49.000" y="132.000" width="17.000" height="17.000" fill="#000000"/>
+  <rect x="83.000" y="132.000" width="17.000" height="17.000" fill="#000000"/>
+  <rect x="117.000" y="132.000" width="17.000" height="17.000" fill="#000000"/>
+  <rect x="151.000" y="132.000" width="17.000" height="17.000" fill="#000000"/>
+  <line x1="15.000" y1="157.000" x2="115.000" y2="157.000"
+        stroke="#000000" stroke-width="0.6"/>
+  <line x1="15.000" y1="155.000" x2="15.000" y2="159.000"
+        stroke="#000000" stroke-width="0.6"/>
+  <line x1="65.000" y1="155.500" x2="65.000" y2="158.500"
+        stroke="#000000" stroke-width="0.6"/>
+  <line x1="115.000" y1="155.000" x2="115.000" y2="159.000"
+        stroke="#000000" stroke-width="0.6"/>
+  <text x="15.000" y="163.000" font-family="sans-serif" font-size="3.0"
+        fill="#000000">100 mm check bar</text>
+</svg>

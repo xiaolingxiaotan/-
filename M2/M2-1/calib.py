@@ -10,7 +10,7 @@ DEFAULT_IMAGE_DIR = os.path.join(HERE, "calib_imgs")
 
 BOARD_COLS = 6          # 横向角点数
 BOARD_ROWS = 9          # 纵向角点数
-SQUARE_SIZE_MM = 23.0   # 方格实际边长
+SQUARE_SIZE_MM = 17.0   # 方格实际边长
 
 RMSE_GOOD = 0.5         # 低于此值视为良好
 RMSE_FAIL = 1.5         # 高于此值视为标定失败，需要重采

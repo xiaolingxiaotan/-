@@ -16,148 +16,652 @@
   },
   "samples": [
     {
-      "index": 1,
+      "scene": "normal",
+      "scene_name": "正常室内光",
+      "state": "red_on",
+      "state_name": "红灯亮",
       "pixels": 20081,
       "mean_hsv": [
-        170.2,
-        99.59,
-        108.19
+        8.56,
+        179.97,
+        227.13
       ],
-      "h_lo": 104.0,
-      "h_hi": 1.0,
-      "s_lo": 14.0,
-      "s_hi": 162.0,
-      "v_lo": 60.0,
-      "v_hi": 129.0,
-      "threshold": [
-        104.0,
-        14.0,
-        60.0,
-        1.0,
-        162.0,
-        129.0
-      ],
-      "hue_wraps": true
-    },
-    {
-      "index": 2,
-      "pixels": 20081,
-      "mean_hsv": [
-        12.59,
-        229.59,
-        227.88
-      ],
-      "h_lo": 178.0,
-      "h_hi": 23.0,
+      "h_lo": 170.0,
+      "h_hi": 20.0,
       "s_lo": 66.0,
       "s_hi": 255.0,
-      "v_lo": 139.0,
+      "v_lo": 135.0,
       "v_hi": 255.0,
       "threshold": [
-        178.0,
+        170.0,
         66.0,
-        139.0,
-        23.0,
+        135.0,
+        20.0,
         255.0,
         255.0
       ],
       "hue_wraps": true
     },
     {
-      "index": 3,
+      "scene": "normal",
+      "scene_name": "正常室内光",
+      "state": "red_off",
+      "state_name": "红灯灭",
       "pixels": 20081,
       "mean_hsv": [
-        85.37,
-        103.4,
-        113.54
+        161.01,
+        113.42,
+        112.04
       ],
-      "h_lo": 75.0,
-      "h_hi": 104.0,
-      "s_lo": 21.0,
-      "s_hi": 191.0,
-      "v_lo": 65.0,
-      "v_hi": 148.0,
+      "h_lo": 103.0,
+      "h_hi": 0.0,
+      "s_lo": 17.0,
+      "s_hi": 194.0,
+      "v_lo": 53.0,
+      "v_hi": 175.0,
       "threshold": [
-        75.0,
-        21.0,
-        65.0,
-        104.0,
-        191.0,
-        148.0
+        103.0,
+        17.0,
+        53.0,
+        0.0,
+        194.0,
+        175.0
+      ],
+      "hue_wraps": true
+    },
+    {
+      "scene": "normal",
+      "scene_name": "正常室内光",
+      "state": "green_on",
+      "state_name": "绿灯亮",
+      "pixels": 20081,
+      "mean_hsv": [
+        68.82,
+        72.21,
+        228.85
+      ],
+      "h_lo": 0.0,
+      "h_hi": 88.0,
+      "s_lo": 0.0,
+      "s_hi": 187.0,
+      "v_lo": 178.0,
+      "v_hi": 255.0,
+      "threshold": [
+        0.0,
+        0.0,
+        178.0,
+        88.0,
+        187.0,
+        255.0
       ],
       "hue_wraps": false
     },
     {
-      "index": 4,
+      "scene": "normal",
+      "scene_name": "正常室内光",
+      "state": "green_off",
+      "state_name": "绿灯灭",
       "pixels": 20081,
       "mean_hsv": [
-        71.16,
-        96.15,
-        211.69
+        89.3,
+        113.28,
+        134.67
+      ],
+      "h_lo": 75.0,
+      "h_hi": 108.0,
+      "s_lo": 47.0,
+      "s_hi": 195.0,
+      "v_lo": 52.0,
+      "v_hi": 190.0,
+      "threshold": [
+        75.0,
+        47.0,
+        52.0,
+        108.0,
+        195.0,
+        190.0
+      ],
+      "hue_wraps": false
+    },
+    {
+      "scene": "normal",
+      "scene_name": "正常室内光",
+      "state": "yellow_on",
+      "state_name": "黄灯亮",
+      "pixels": 20081,
+      "mean_hsv": [
+        14.85,
+        80.26,
+        229.44
+      ],
+      "h_lo": 179.0,
+      "h_hi": 32.0,
+      "s_lo": 0.0,
+      "s_hi": 249.0,
+      "v_lo": 171.0,
+      "v_hi": 255.0,
+      "threshold": [
+        179.0,
+        0.0,
+        171.0,
+        32.0,
+        249.0,
+        255.0
+      ],
+      "hue_wraps": true
+    },
+    {
+      "scene": "normal",
+      "scene_name": "正常室内光",
+      "state": "yellow_off",
+      "state_name": "黄灯灭",
+      "pixels": 20081,
+      "mean_hsv": [
+        17.06,
+        126.12,
+        133.47
+      ],
+      "h_lo": 110.0,
+      "h_hi": 103.0,
+      "s_lo": 19.0,
+      "s_hi": 226.0,
+      "v_lo": 58.0,
+      "v_hi": 169.0,
+      "threshold": [
+        110.0,
+        19.0,
+        58.0,
+        103.0,
+        226.0,
+        169.0
+      ],
+      "hue_wraps": true
+    },
+    {
+      "scene": "strong",
+      "scene_name": "强光直射",
+      "state": "red_on",
+      "state_name": "红灯亮",
+      "pixels": 20081,
+      "mean_hsv": [
+        3.42,
+        185.52,
+        216.41
+      ],
+      "h_lo": 165.0,
+      "h_hi": 15.0,
+      "s_lo": 11.0,
+      "s_hi": 255.0,
+      "v_lo": 120.0,
+      "v_hi": 255.0,
+      "threshold": [
+        165.0,
+        11.0,
+        120.0,
+        15.0,
+        255.0,
+        255.0
+      ],
+      "hue_wraps": true
+    },
+    {
+      "scene": "strong",
+      "scene_name": "强光直射",
+      "state": "red_off",
+      "state_name": "红灯灭",
+      "pixels": 20081,
+      "mean_hsv": [
+        175.59,
+        147.33,
+        158.67
+      ],
+      "h_lo": 161.0,
+      "h_hi": 2.0,
+      "s_lo": 10.0,
+      "s_hi": 230.0,
+      "v_lo": 64.0,
+      "v_hi": 222.0,
+      "threshold": [
+        161.0,
+        10.0,
+        64.0,
+        2.0,
+        230.0,
+        222.0
+      ],
+      "hue_wraps": true
+    },
+    {
+      "scene": "strong",
+      "scene_name": "强光直射",
+      "state": "green_on",
+      "state_name": "绿灯亮",
+      "pixels": 20081,
+      "mean_hsv": [
+        76.58,
+        73.98,
+        221.59
       ],
       "h_lo": 0.0,
       "h_hi": 90.0,
       "s_lo": 0.0,
-      "s_hi": 253.0,
-      "v_lo": 126.0,
+      "s_hi": 213.0,
+      "v_lo": 123.0,
       "v_hi": 255.0,
       "threshold": [
         0.0,
         0.0,
-        126.0,
+        123.0,
         90.0,
-        253.0,
+        213.0,
         255.0
       ],
       "hue_wraps": false
     },
     {
-      "index": 5,
+      "scene": "strong",
+      "scene_name": "强光直射",
+      "state": "green_off",
+      "state_name": "绿灯灭",
       "pixels": 20081,
       "mean_hsv": [
-        16.41,
-        172.17,
-        139.19
+        77.19,
+        116.05,
+        140.45
       ],
-      "h_lo": 169.0,
-      "h_hi": 24.0,
+      "h_lo": 170.0,
+      "h_hi": 120.0,
       "s_lo": 0.0,
-      "s_hi": 255.0,
-      "v_lo": 68.0,
-      "v_hi": 171.0,
+      "s_hi": 200.0,
+      "v_lo": 46.0,
+      "v_hi": 208.0,
       "threshold": [
-        169.0,
+        170.0,
         0.0,
-        68.0,
-        24.0,
-        255.0,
-        171.0
+        46.0,
+        120.0,
+        200.0,
+        208.0
       ],
       "hue_wraps": true
     },
     {
-      "index": 6,
+      "scene": "strong",
+      "scene_name": "强光直射",
+      "state": "yellow_on",
+      "state_name": "黄灯亮",
       "pixels": 20081,
       "mean_hsv": [
-        21.56,
-        124.4,
-        227.97
+        21.8,
+        133.43,
+        224.92
       ],
-      "h_lo": 0.0,
+      "h_lo": 5.0,
       "h_hi": 30.0,
-      "s_lo": 0.0,
+      "s_lo": 43.0,
       "s_hi": 255.0,
-      "v_lo": 152.0,
+      "v_lo": 132.0,
       "v_hi": 255.0,
       "threshold": [
-        0.0,
-        0.0,
-        152.0,
+        5.0,
+        43.0,
+        132.0,
         30.0,
         255.0,
         255.0
       ],
       "hue_wraps": false
+    },
+    {
+      "scene": "strong",
+      "scene_name": "强光直射",
+      "state": "yellow_off",
+      "state_name": "黄灯灭",
+      "pixels": 20081,
+      "mean_hsv": [
+        10.35,
+        172.07,
+        175.62
+      ],
+      "h_lo": 124.0,
+      "h_hi": 22.0,
+      "s_lo": 11.0,
+      "s_hi": 255.0,
+      "v_lo": 81.0,
+      "v_hi": 228.0,
+      "threshold": [
+        124.0,
+        11.0,
+        81.0,
+        22.0,
+        255.0,
+        228.0
+      ],
+      "hue_wraps": true
+    },
+    {
+      "scene": "backlight",
+      "scene_name": "逆光/背光",
+      "state": "red_on",
+      "state_name": "红灯亮",
+      "pixels": 20081,
+      "mean_hsv": [
+        5.54,
+        161.03,
+        219.51
+      ],
+      "h_lo": 164.0,
+      "h_hi": 18.0,
+      "s_lo": 23.0,
+      "s_hi": 233.0,
+      "v_lo": 142.0,
+      "v_hi": 255.0,
+      "threshold": [
+        164.0,
+        23.0,
+        142.0,
+        18.0,
+        233.0,
+        255.0
+      ],
+      "hue_wraps": true
+    },
+    {
+      "scene": "backlight",
+      "scene_name": "逆光/背光",
+      "state": "red_off",
+      "state_name": "红灯灭",
+      "pixels": 20081,
+      "mean_hsv": [
+        158.16,
+        73.5,
+        117.7
+      ],
+      "h_lo": 103.0,
+      "h_hi": 0.0,
+      "s_lo": 11.0,
+      "s_hi": 143.0,
+      "v_lo": 72.0,
+      "v_hi": 166.0,
+      "threshold": [
+        103.0,
+        11.0,
+        72.0,
+        0.0,
+        143.0,
+        166.0
+      ],
+      "hue_wraps": true
+    },
+    {
+      "scene": "backlight",
+      "scene_name": "逆光/背光",
+      "state": "green_on",
+      "state_name": "绿灯亮",
+      "pixels": 20081,
+      "mean_hsv": [
+        69.9,
+        76.04,
+        227.22
+      ],
+      "h_lo": 0.0,
+      "h_hi": 90.0,
+      "s_lo": 0.0,
+      "s_hi": 195.0,
+      "v_lo": 162.0,
+      "v_hi": 255.0,
+      "threshold": [
+        0.0,
+        0.0,
+        162.0,
+        90.0,
+        195.0,
+        255.0
+      ],
+      "hue_wraps": false
+    },
+    {
+      "scene": "backlight",
+      "scene_name": "逆光/背光",
+      "state": "green_off",
+      "state_name": "绿灯灭",
+      "pixels": 20081,
+      "mean_hsv": [
+        88.75,
+        74.98,
+        123.53
+      ],
+      "h_lo": 71.0,
+      "h_hi": 112.0,
+      "s_lo": 25.0,
+      "s_hi": 133.0,
+      "v_lo": 72.0,
+      "v_hi": 166.0,
+      "threshold": [
+        71.0,
+        25.0,
+        72.0,
+        112.0,
+        133.0,
+        166.0
+      ],
+      "hue_wraps": false
+    },
+    {
+      "scene": "backlight",
+      "scene_name": "逆光/背光",
+      "state": "yellow_on",
+      "state_name": "黄灯亮",
+      "pixels": 20081,
+      "mean_hsv": [
+        19.12,
+        99.44,
+        228.5
+      ],
+      "h_lo": 0.0,
+      "h_hi": 30.0,
+      "s_lo": 0.0,
+      "s_hi": 255.0,
+      "v_lo": 159.0,
+      "v_hi": 255.0,
+      "threshold": [
+        0.0,
+        0.0,
+        159.0,
+        30.0,
+        255.0,
+        255.0
+      ],
+      "hue_wraps": false
+    },
+    {
+      "scene": "backlight",
+      "scene_name": "逆光/背光",
+      "state": "yellow_off",
+      "state_name": "黄灯灭",
+      "pixels": 20081,
+      "mean_hsv": [
+        4.61,
+        86.73,
+        132.45
+      ],
+      "h_lo": 103.0,
+      "h_hi": 21.0,
+      "s_lo": 18.0,
+      "s_hi": 169.0,
+      "v_lo": 76.0,
+      "v_hi": 163.0,
+      "threshold": [
+        103.0,
+        18.0,
+        76.0,
+        21.0,
+        169.0,
+        163.0
+      ],
+      "hue_wraps": true
+    },
+    {
+      "scene": "dusk",
+      "scene_name": "暗光/黄昏",
+      "state": "red_on",
+      "state_name": "红灯亮",
+      "pixels": 20081,
+      "mean_hsv": [
+        16.61,
+        74.46,
+        241.3
+      ],
+      "h_lo": 171.0,
+      "h_hi": 30.0,
+      "s_lo": 44.0,
+      "s_hi": 165.0,
+      "v_lo": 158.0,
+      "v_hi": 255.0,
+      "threshold": [
+        171.0,
+        44.0,
+        158.0,
+        30.0,
+        165.0,
+        255.0
+      ],
+      "hue_wraps": true
+    },
+    {
+      "scene": "dusk",
+      "scene_name": "暗光/黄昏",
+      "state": "red_off",
+      "state_name": "红灯灭",
+      "pixels": 20081,
+      "mean_hsv": [
+        161.54,
+        98.57,
+        129.97
+      ],
+      "h_lo": 125.0,
+      "h_hi": 170.0,
+      "s_lo": 27.0,
+      "s_hi": 143.0,
+      "v_lo": 67.0,
+      "v_hi": 163.0,
+      "threshold": [
+        125.0,
+        27.0,
+        67.0,
+        170.0,
+        143.0,
+        163.0
+      ],
+      "hue_wraps": false
+    },
+    {
+      "scene": "dusk",
+      "scene_name": "暗光/黄昏",
+      "state": "green_on",
+      "state_name": "绿灯亮",
+      "pixels": 20081,
+      "mean_hsv": [
+        19.47,
+        39.32,
+        249.07
+      ],
+      "h_lo": 0.0,
+      "h_hi": 89.0,
+      "s_lo": 0.0,
+      "s_hi": 142.0,
+      "v_lo": 212.0,
+      "v_hi": 255.0,
+      "threshold": [
+        0.0,
+        0.0,
+        212.0,
+        89.0,
+        142.0,
+        255.0
+      ],
+      "hue_wraps": false
+    },
+    {
+      "scene": "dusk",
+      "scene_name": "暗光/黄昏",
+      "state": "green_off",
+      "state_name": "绿灯灭",
+      "pixels": 20081,
+      "mean_hsv": [
+        82.11,
+        104.03,
+        133.24
+      ],
+      "h_lo": 74.0,
+      "h_hi": 104.0,
+      "s_lo": 40.0,
+      "s_hi": 138.0,
+      "v_lo": 60.0,
+      "v_hi": 176.0,
+      "threshold": [
+        74.0,
+        40.0,
+        60.0,
+        104.0,
+        138.0,
+        176.0
+      ],
+      "hue_wraps": false
+    },
+    {
+      "scene": "dusk",
+      "scene_name": "暗光/黄昏",
+      "state": "yellow_on",
+      "state_name": "黄灯亮",
+      "pixels": 20081,
+      "mean_hsv": [
+        7.59,
+        18.77,
+        253.11
+      ],
+      "h_lo": 0.0,
+      "h_hi": 32.0,
+      "s_lo": 0.0,
+      "s_hi": 107.0,
+      "v_lo": 254.0,
+      "v_hi": 255.0,
+      "threshold": [
+        0.0,
+        0.0,
+        254.0,
+        32.0,
+        107.0,
+        255.0
+      ],
+      "hue_wraps": false
+    },
+    {
+      "scene": "dusk",
+      "scene_name": "暗光/黄昏",
+      "state": "yellow_off",
+      "state_name": "黄灯灭",
+      "pixels": 20081,
+      "mean_hsv": [
+        20.74,
+        104.24,
+        138.13
+      ],
+      "h_lo": 180.0,
+      "h_hi": 24.0,
+      "s_lo": 19.0,
+      "s_hi": 132.0,
+      "v_lo": 60.0,
+      "v_hi": 171.0,
+      "threshold": [
+        180.0,
+        19.0,
+        60.0,
+        24.0,
+        132.0,
+        171.0
+      ],
+      "hue_wraps": true
     }
   ]
 }
