@@ -1,0 +1,34 @@
+{
+  "纯 IoU": {
+    "ids": 6,
+    "id_switches": 0,
+    "static": {
+      "id": 4,
+      "frames": 40,
+      "total_move_px": 81.0,
+      "jitter_std_px": 0.978
+    },
+    "occlusion_retention": {
+      "5": 0.0,
+      "10": 0.0,
+      "15": 0.0,
+      "20": 0.0
+    }
+  },
+  "+卡尔曼": {
+    "ids": 6,
+    "id_switches": 0,
+    "static": {
+      "id": 4,
+      "frames": 40,
+      "total_move_px": 54.4,
+      "jitter_std_px": 0.696
+    },
+    "occlusion_retention": {
+      "5": 1.0,
+      "10": 0.667,
+      "15": 0.0,
+      "20": 0.0
+    }
+  }
+}

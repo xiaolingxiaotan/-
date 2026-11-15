@@ -1,0 +1,8 @@
+﻿kind,detail,value
+source,桌面文件夹图片总数（含 inbox）,381
+source,按内容哈希去重后,377
+project,M2-3/data/raw 文件总数,378
+project,其中重复内容组数,1
+import,本轮补入,0
+import,已存在而跳过（不重复导入）,377
+duplicate_group,7fc8b5eafc940ea2d0ec4cf839305833,"052784da621ed7a1c573087a7decca6c.jpg,cbe2fd955ceba61366a1ddb0eb31e505.jpg"

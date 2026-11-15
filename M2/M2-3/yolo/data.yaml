@@ -1,0 +1,12 @@
+path: /home/xiaolingxiaotan/智能车一轮考核/智能车一轮考核/M2/M2-3/yolo
+train: images/train
+val: images/val
+test: images/test
+nc: 6
+names:
+  0: 书
+  1: 笔
+  2: 杯子
+  3: 保温杯
+  4: 吧唧
+  5: 草稿本

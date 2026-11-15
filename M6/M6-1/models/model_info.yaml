@@ -1,0 +1,52 @@
+model: YOLOv8n（ultralytics，AGPL-3.0）
+pretrained_on: COCO 2017（80 类），本项目在其上微调 6 类
+task: detect
+input:
+  name: images
+  shape:
+  - batch
+  - '3'
+  - height
+  - width
+  dtype: float32
+  layout: NCHW
+  color: RGB
+  normalize: 像素值 / 255，无 mean/std
+  resize: letterbox：等比缩放到 640 内，短边对齐，剩余部分填 114 灰
+output:
+  name: output0
+  shape:
+  - batch
+  - Concatoutput0_dim_1
+  - anchors
+  layout: N x (4 + 类别数) x 8400；8400 = 80²+40²+20²
+  decode: 前 4 行是 cx,cy,w,h（已解码到输入像素尺度），后面每行是一类的 sigmoid 分数，无 objectness
+opset: 17
+dynamic_axes:
+  batch: 可变
+size_mb: 12.02
+operators:
+  Constant: 93
+  Conv: 64
+  Mul: 63
+  Sigmoid: 58
+  Concat: 42
+  Reshape: 23
+  Unsqueeze: 20
+  Shape: 16
+  Add: 15
+  Cast: 12
+  Gather: 10
+  Split: 8
+  Range: 6
+  Expand: 6
+  MaxPool: 3
+  ConstantOfShape: 3
+  Transpose: 3
+  Resize: 2
+  Div: 2
+  Slice: 2
+  Sub: 2
+  Softmax: 1
+runnable:
+- CPUExecutionProvider

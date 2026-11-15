@@ -1,0 +1,43 @@
+model: best_fp32.onnx
+input_shape:
+- 1
+- 3
+- 640
+- 640
+frames_per_ep: 200
+board: 笔记本 RTX 5060 Laptop（无 Jetson/RK 板）
+eps:
+  cpu:
+    status: ok
+    provider_used: CPUExecutionProvider
+    fps: 25.72
+    p50_ms: 38.38
+    p95_ms: 43.66
+    p99_ms: 52.88
+    max_ms: 53.45
+    mean_ms: 38.88
+  cuda:
+    status: ok
+    provider_used: CUDAExecutionProvider
+    fps: 100.36
+    p50_ms: 6.65
+    p95_ms: 14.78
+    p99_ms: 15.1
+    max_ms: 16.02
+    mean_ms: 9.96
+  cuda_graph:
+    status: ok
+    provider_used: CUDAExecutionProvider
+    fps: 353.03
+    p50_ms: 2.82
+    p95_ms: 2.91
+    p99_ms: 2.98
+    max_ms: 2.99
+    mean_ms: 2.83
+  tensorrt:
+    status: unavailable
+    reason: 指定 TensorrtExecutionProvider 但实际退化到 CPUExecutionProvider（通常是缺 libnvinfer
+      等运行库）
+recommended: cuda_graph
+reason: cuda_graph 的 P99 最低（2.98 ms），且尾部最稳；CUDA Graph 把每帧的 kernel launch 开销摊掉，是唯一能同时满足
+  FPS≥30 与 P99<50ms 的配置。

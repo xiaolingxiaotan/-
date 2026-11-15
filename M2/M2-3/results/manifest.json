@@ -1,0 +1,104 @@
+{
+  "generated": "2026-11-13T22:57:56",
+  "python": "3.10.12",
+  "torch": "2.8.0+cu128",
+  "command": "python3 train.py --pictures data/annotations.json",
+  "input_size": 640,
+  "num_classes": 6,
+  "classes": {
+    "0": "书",
+    "1": "笔",
+    "2": "杯子",
+    "3": "保温杯",
+    "4": "吧唧",
+    "5": "草稿本"
+  },
+  "epochs": 54,
+  "final": {
+    "epoch": 54,
+    "train_loss": 1.0092370705248197,
+    "val_loss": 11.036915634251848,
+    "box": 0.30966760387903525,
+    "obj": 8.203825944586645,
+    "cls": 1.021165374713608,
+    "mAP50": 0.5527000834174337,
+    "mAP50-95": 0.3143875154011082,
+    "lr": 0.0007339564536692137,
+    "grad_norm": 44.33251953125,
+    "seconds": null
+  },
+  "files": {
+    "models/best.onnx": {
+      "size": 3988509,
+      "sha256": "d6e9fe192569803bcb624c45e553753f1d6614e9cf62ad1dc349c7ea6764ea35"
+    },
+    "models/best.pt": {
+      "size": 7411775,
+      "sha256": "664c038427d961d81fc94fa546acf01b692bc36c6a5cfdfc9c9c4dd012dd9d36"
+    },
+    "models/best_v1_浅.pt": {
+      "size": 2550003,
+      "sha256": "e0f8c81ff9247b3f698f995837cd0508848d86ece69ffb773346fb57288d722e"
+    },
+    "results/benchmark.csv": {
+      "size": 230,
+      "sha256": "0d641b1a84bfeab4791e458ba68ac5c2b10083c034d21da4f8f8d5950417c050"
+    },
+    "results/benchmark.png": {
+      "size": 37558,
+      "sha256": "8670d1bef91b4910ff946886708612b64cc22d7a86ff0c606bbb58235f7821ab"
+    },
+    "results/confusion.png": {
+      "size": 41456,
+      "sha256": "ccc5dea2732ffb95cd699fa260e31f5c606efa87ed0479cfb28bad85c66a2d32"
+    },
+    "results/confusion_matrix.csv": {
+      "size": 226,
+      "sha256": "704c9eec6869336b5591efee671527a07a1f7608efe7a30efdc75a765a790c28"
+    },
+    "results/consistency.json": {
+      "size": 215,
+      "sha256": "9d353ca14487a3d0b3b021b1f0231a5e224335ebd1d1b55c914ae9970416a41f"
+    },
+    "results/curves.png": {
+      "size": 93076,
+      "sha256": "c5cbe977eb3cf0d420528dee05c2d61c8b9baec117a74caf474b1fc58ebf9ed8"
+    },
+    "results/eval_metrics.json": {
+      "size": 900,
+      "sha256": "dc9bc6edd30ebf788757e0c36d9b059b40bfcf39068c1d0f637d2904f72a4d54"
+    },
+    "results/eval_report.txt": {
+      "size": 1278,
+      "sha256": "5d50cd8e14eb55287928d126ad1f4f98f224d94e52be6c35beb3e589377431f2"
+    },
+    "results/failures.csv": {
+      "size": 1342,
+      "sha256": "67c5ced4bb5958c1b80a285a1b452a134626c09d2074f63bdd4c5ed3d937be70"
+    },
+    "results/history.csv": {
+      "size": 9472,
+      "sha256": "6f4a4c95018ddc3e886e6686252b2fbc4aa912521897aed68abc58c1800efde2"
+    },
+    "results/history_summary.txt": {
+      "size": 177,
+      "sha256": "4d97468472165473367d3571e6a8fb784d8171aa6a59038e438a083522380062"
+    },
+    "results/manifest.json": {
+      "size": 3139,
+      "sha256": "0ea823c7471d1ce4bb3055316ed67d0a650568e311e97cdf0fbe7a3dfa2095ba"
+    },
+    "results/preprocess_spec.json": {
+      "size": 694,
+      "sha256": "75dbe7baec6ef93038999390aedbfb79b5615294a54c7ef2443fb39a63442a44"
+    },
+    "results/train_config.json": {
+      "size": 1080,
+      "sha256": "a149f47ed824f34bf7a47a954da9d954838775e986f4d4877d65e936be31c413"
+    },
+    "results/venv_check.jpg": {
+      "size": 65698,
+      "sha256": "eb0af3c939d4401c469d40bc42109fb818e0be9f6dc0c56c9038599ed9bac516"
+    }
+  }
+}

@@ -1,0 +1,18 @@
+board: 本机（笔记本 RTX 5060 + CPU）
+model: best_fp32.onnx
+input_shape:
+- 1
+- 3
+- 640
+- 640
+mode: gpu
+provider: CUDAExecutionProvider
+seconds: 60.0
+frames: 6874
+fps: 114.57
+latency_p50_ms: 7.47
+latency_p95_ms: 17.59
+latency_cold_ms: 45957.26
+mem_mb: 1756.5
+cpu_pct: 0.0
+model_size_mb: 12.02

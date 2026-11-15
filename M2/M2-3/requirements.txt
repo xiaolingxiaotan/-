@@ -1,0 +1,18 @@
+# M2-3 依赖清单（实测通过的版本，Python 3.10 / x86_64 Linux）
+# 安装：pip3 install --user -r requirements.txt
+# 现场部署只需要 CPU 版 torch 与 onnxruntime，不需要 GPU 相关库。
+
+# --- 训练与推理核心 ---
+torch==2.8.0            # 若现场无 GPU，可改装 CPU 版：--index-url https://download.pytorch.org/whl/cpu
+numpy==2.2.6
+
+# --- 图像读写与显示 ---
+Pillow==9.0.1
+opencv-python==5.0.0.93 # 视频读写与摄像头（图片/训练只用 Pillow）
+
+# --- 曲线与耗时分布图 ---
+matplotlib==3.10.9
+
+# --- 导出与 CPU 部署（题面 §6.1 要求） ---
+onnx==1.23.2
+onnxruntime==1.23.2     # CPUExecutionProvider，不需要 GPU 版

@@ -1,0 +1,55 @@
+{
+  "epochs": 150,
+  "batch_size": 16,
+  "lr": 0.001,
+  "optimizer": {
+    "optimizer": "AdamW(lr=1.0e-03, wd=1.0e-03, betas=0.900/0.999, 不衰减参数 196 个) + warmup3ep + cosine->1%",
+    "lr": 0.001,
+    "betas": [
+      0.9,
+      0.999
+    ],
+    "eps": 1e-08,
+    "weight_decay": 0.001,
+    "no_decay_param_count": 196,
+    "decay_param_count": 95,
+    "batch_size": 16,
+    "total_epochs": 150,
+    "warmup_epochs": 3.0,
+    "min_lr_ratio": 0.01,
+    "grad_clip": 10.0,
+    "scheduler": "cosine",
+    "epoch_done": 54,
+    "last_grad_norm": 44.33251953125,
+    "steps_per_epoch": null
+  },
+  "loss": {
+    "box_gain": 7.5,
+    "obj_gain": 1.0,
+    "cls_gain": 0.5,
+    "ignore_iou": 0.5,
+    "neighbor": 1
+  },
+  "augment": true,
+  "seed": 0,
+  "split_ratio": [
+    0.7,
+    0.2,
+    0.1
+  ],
+  "train_images": 1124,
+  "val_images": 316,
+  "test_images": 156,
+  "input_size": 640,
+  "pad_value": 114,
+  "num_classes": 6,
+  "classes": {
+    "0": "书",
+    "1": "笔",
+    "2": "杯子",
+    "3": "保温杯",
+    "4": "吧唧",
+    "5": "草稿本"
+  },
+  "opset": 17
+}

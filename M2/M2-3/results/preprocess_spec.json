@@ -1,0 +1,18 @@
+{
+  "size": 640,
+  "resize": "等比缩放 + 居中填充（letterbox）：短边缩到 640，长边居中，两边填常量",
+  "interp_down": "PIL BOX（面积平均，缩小用，等同于先低通再抽样）",
+  "interp_up": "PIL BICUBIC（放大用）",
+  "pad_value": 114,
+  "normalize": "像素值除以 255；不减均值、不除标准差",
+  "channel_order": "RGB；HWC -> CHW；batch 维在前",
+  "input_shape": [
+    1,
+    3,
+    640,
+    640
+  ],
+  "dtype": "float32",
+  "postprocess": "sigmoid 解码 -> 分数=类别分×置信度 -> 逐类 NMS -> letterbox 反算回原图",
+  "note": "训练端、ONNX 端、现场部署必须逐项一致；这是掉点的第一大原因"
+}

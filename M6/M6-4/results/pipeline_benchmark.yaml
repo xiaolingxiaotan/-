@@ -1,0 +1,52 @@
+model: best_fp32.onnx
+source: raw
+device: gpu
+provider: CUDAExecutionProvider
+queue_size: 8
+frames_per_mode: 600
+results:
+  serial:
+    fps: 86.87
+    frames: 600
+    latency_p50_ms: 9.56
+    latency_p95_ms: 19.52
+    rss_mb: 3190.8
+    cpu_per_core_pct: []
+    stage_mean_ms:
+      pre: 3.21
+      infer: 7.83
+      post: 0.43
+    wall_s: 6.91
+    speedup_vs_serial: 1.0
+  dual:
+    fps: 95.82
+    frames: 600
+    latency_p50_ms: 52.54
+    latency_p95_ms: 111.64
+    rss_mb: 3198.2
+    cpu_per_core_pct: []
+    stage_mean_ms:
+      pre: 4.22
+      infer: 9.93
+      post: 0.43
+    wall_s: 6.26
+    speedup_vs_serial: 1.1
+  triple:
+    fps: 157.54
+    frames: 600
+    latency_p50_ms: 34.57
+    latency_p95_ms: 60.79
+    rss_mb: 3205.0
+    cpu_per_core_pct: []
+    stage_mean_ms:
+      pre: 3.73
+      infer: 6.3
+      post: 0.88
+    wall_s: 3.81
+    speedup_vs_serial: 1.81
+speedup_triple_vs_serial: 1.81
+speedup_dual_vs_serial: 1.1
+bottleneck_stage: infer
+bottleneck_reason: 三级的平均耗时：pre 3.73 ms, infer 6.30 ms, post 0.88 ms；最慢的是 infer（6.30
+  ms），流水线的吞吐上限就是它——6.30 ms/帧 ≈ 158.7 FPS
+buffer_evidence: 见 docs/zero_copy.md（allocations_total 恒为 2N）

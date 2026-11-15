@@ -1,8 +1,18 @@
+"""M2-2 单目视觉位姿估计：棋盘格角点 + solvePnP，输出 6-DoF。
+
+数据源：--image / --video / --camera 三选一，统一走 process_frame。
+内参：只读 ../M2-1/camera_calibration.yaml，不重新标定、不写死。
+现场实拍：--capture-group <组名> 开启，空格或 c 连拍，产物在 results/capture/。
+文档：report.md（原理与参数）、README.md（快速开始）、
+      results/accuracy.md（实测表）、marker/README.md（靶标与物体系）。
+"""
+
 import argparse
 import csv
 import glob
 import os
 import re
+import tempfile
 import time
 from dataclasses import dataclass
 from typing import Dict, List, Optional, Sequence, Tuple
@@ -125,7 +135,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--headless",
         action="store_true",
-        help="不打开窗口，只处理/保存（摄像头模式会一直处理到 Ctrl+C）",
+        help="不打开窗口，只处理/保存（摄像头模式默认一直处理到 Ctrl+C；"
+             "配 --capture-auto 时拍完自动退出）",
     )
     parser.add_argument(
         "--save-dir",
@@ -135,7 +146,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--csv",
         default=None,
-        help="可选：把每帧位姿写入 CSV（便于精度实验）",
+        help="可选：把每帧位姿写入 CSV（整段流，便于精度实验）",
     )
     parser.add_argument(
         "--no-distort",
@@ -162,6 +173,43 @@ def parse_args() -> argparse.Namespace:
         "--verbose",
         action="store_true",
         help="摄像头/视频模式每帧打印位姿",
+    )
+
+    # capture：现场精度实拍专用。不给 --capture-group 时整组功能完全不启用，
+    # 摄像头/视频模式的原有行为（含 s/q 按键）保持不变。
+    capture = parser.add_argument_group("现场拍照（精度实测）")
+    capture.add_argument(
+        "--capture-group",
+        default=None,
+        help="开启拍照并指定组名，如 distance_030 / yaw_060 / edge_030_center；不给则不启用",
+    )
+    capture.add_argument(
+        "--capture-dir",
+        default=os.path.join(DEFAULT_SAVE_DIR, "capture"),
+        help="拍照根目录，默认 results/capture/，每组一个子目录",
+    )
+    capture.add_argument(
+        "--truth",
+        type=float,
+        default=None,
+        help="本组真值，仅写入清单不参与计算：距离填 m（如 0.30），角度填度（如 30）",
+    )
+    capture.add_argument(
+        "--capture-burst",
+        type=int,
+        default=5,
+        help="按一次空格/ c 连拍的帧数，默认 5（对应每档 5 帧）",
+    )
+    capture.add_argument(
+        "--capture-interval",
+        type=float,
+        default=0.3,
+        help="连拍两帧之间的最小间隔（秒），默认 0.3，避免 5 帧几乎相同",
+    )
+    capture.add_argument(
+        "--capture-auto",
+        action="store_true",
+        help="启动即自动拍一组并退出，适合 --headless 批量采集，不用按键",
     )
     return parser.parse_args()
 
@@ -190,9 +238,31 @@ def load_calibration(path: str, square_mm_override: Optional[float]) -> Calibrat
         raise FileNotFoundError(f"找不到标定文件: {path}")
 
     # fs：OpenCV 的 FileStorage 对象，用只读方式打开 YAML。
-    fs = cv2.FileStorage(path, cv2.FILE_STORAGE_READ)
-    if not fs.isOpened():
-        raise RuntimeError(f"无法读取标定 YAML: {path}")
+    # M2-1 的 camera_calibration.yaml 是常规 YAML，没有 OpenCV 要求的
+    # "%YAML:1.0" 头，OpenCV 4.5 会直接报 "Input file is invalid"。
+    # 先按原文件试读；失败时把内容原样补头写到 ASCII 临时文件再读。
+    # 只改文件定位方式，YAML 里的内参数值一个都不动。
+    fs = None
+    probe_path = None
+    try:
+        fs = cv2.FileStorage(path, cv2.FILE_STORAGE_READ)
+        if not fs.isOpened():
+            fs.release()
+            fs = None
+    except Exception:  # noqa: BLE001 - 不同 OpenCV 版本失败方式不同，统一走兜底
+        fs = None
+
+    if fs is None:
+        with open(path, "r", encoding="utf-8") as handle:
+            text = handle.read()
+        fd, probe_path = tempfile.mkstemp(prefix="m22_calib_", suffix=".yaml")
+        with os.fdopen(fd, "w", encoding="utf-8") as handle:
+            handle.write("%YAML:1.0\n" + text)
+        fs = cv2.FileStorage(probe_path, cv2.FILE_STORAGE_READ)
+        if not fs.isOpened():
+            fs.release()
+            raise RuntimeError(f"无法读取标定 YAML: {path}")
+        print(f"[calib] 按普通 YAML 兼容读取（补 %YAML:1.0 头）: {path}")
 
     try:
         # camera：YAML 的 camera 根节点，下面挂 intrinsics/distortion/resolution 等。
@@ -242,6 +312,11 @@ def load_calibration(path: str, square_mm_override: Optional[float]) -> Calibrat
             calib_rmse = 0.0
     finally:
         fs.release()
+        if probe_path is not None:
+            try:
+                os.remove(probe_path)
+            except OSError:
+                pass
 
     if cols < 2 or rows < 2:
         raise ValueError(f"棋盘格内角点数异常: {cols} x {rows}")
@@ -1030,6 +1105,179 @@ def safe_stem(path: str) -> str:
     return stem or "image"
 
 
+# 拍照会话：现场精度实测用。每帧同时保存「未标注原始帧」和「标注图」，
+# 并在 capture.csv 里逐帧记下该帧的位姿和真值，便于离线算均值/标准差/误差。
+# 原始帧用 PNG 无损保存，之后可直接 --image 批量重算或 --compare-distort。
+class CaptureSession:
+    HEADER = [
+        "group", "index", "timestamp", "wall_time", "truth", "detected",
+        "reason", "x_m", "y_m", "z_m", "distance_m", "roll_deg",
+        "pitch_deg", "yaw_deg", "reproj_px", "num_solutions", "detector",
+        "raw", "annotated",
+    ]
+
+    def __init__(
+        self,
+        root: str,
+        group: Optional[str],
+        truth: Optional[float],
+        burst: int,
+        interval: float,
+        auto: bool,
+    ) -> None:
+        # enabled：只有显式给了 --capture-group 才启用，保证默认行为零变化。
+        self.enabled = bool(group)
+        self.group = group or ""
+        self.truth = truth
+        self.burst = max(1, int(burst))
+        self.interval = max(0.0, float(interval))
+        self.auto = bool(auto)
+        self.dir = ""
+        self.index = 0            # index：本组已有/当前用到的最大序号，支持续拍
+        self.count = 0            # count：本次运行实际拍到的张数
+        self.pending = 0          # pending：连拍还剩几张
+        self.last_capture = float("-inf")  # last_capture：上次拍照的单调时钟
+        self._auto_fired = False
+        self._file = None
+        self._writer = None
+        if not self.enabled:
+            return
+
+        # 组名做安全字符替换，避免中文/空格把目录弄乱。
+        self.dir = os.path.join(root, re.sub(r"[^\w.-]+", "_", self.group))
+        os.makedirs(self.dir, exist_ok=True)
+        # 续拍：扫描已有的 raw_*.png，从最大序号之后接着编号，绝不覆盖现场旧数据。
+        for name in glob.glob(os.path.join(self.dir, "raw_*.png")):
+            match = re.search(r"raw_(\d+)\.png$", name)
+            if match:
+                self.index = max(self.index, int(match.group(1)))
+
+        csv_path = os.path.join(self.dir, "capture.csv")
+        fresh = not os.path.exists(csv_path) or os.path.getsize(csv_path) == 0
+        self._file = open(csv_path, "a", newline="", encoding="utf-8")
+        self._writer = csv.writer(self._file)
+        if fresh:
+            self._writer.writerow(self.HEADER)
+            self._file.flush()
+        print(
+            f"[capture] group={self.group} dir={self.dir} "
+            f"burst={self.burst} interval={self.interval:.2f}s "
+            f"truth={'' if truth is None else truth:g} next=#{self.index + 1:03d}"
+        )
+        if self.auto:
+            self.trigger()
+            self._auto_fired = True
+
+    # 触发一次连拍；实际拍摄由主循环按帧推进，避免同一帧被重复保存。
+    def trigger(self) -> None:
+        if self.enabled:
+            self.pending = self.burst
+
+    # 是否该拍下一张：还有待拍张数，且距上一张已过最小间隔。
+    def ready(self, now: float) -> bool:
+        return self.enabled and self.pending > 0 and (now - self.last_capture) >= self.interval
+
+    # 自动模式是否已经拍完一组，供主循环退出。
+    @property
+    def auto_finished(self) -> bool:
+        return self.enabled and self.auto and self._auto_fired and self.pending == 0
+
+    # 保存一帧：原始帧 + 标注图 + 清单一行；检出失败也照实保存并记 detected=0。
+    def save(
+        self,
+        frame: np.ndarray,
+        vis: np.ndarray,
+        result: PoseResult,
+        now: float,
+    ) -> None:
+        self.index += 1
+        self.count += 1
+        self.pending -= 1
+        self.last_capture = now
+        stem = f"{self.index:03d}"
+        raw_path = os.path.join(self.dir, f"raw_{stem}.png")
+        axis_path = os.path.join(self.dir, f"axis_{stem}.png")
+        write_image(raw_path, frame)
+        write_image(axis_path, vis)
+
+        row = [
+            self.group,
+            stem,
+            f"{time.time():.6f}",
+            time.strftime("%Y-%m-%d %H:%M:%S"),
+            "" if self.truth is None else f"{self.truth:g}",
+        ]
+        if result.ok and result.tvec is not None:
+            x, y, z = result.tvec.ravel()
+            row += [
+                1,
+                "",
+                f"{x:.6f}",
+                f"{y:.6f}",
+                f"{z:.6f}",
+                f"{result.distance:.6f}",
+                f"{result.roll:.6f}",
+                f"{result.pitch:.6f}",
+                f"{result.yaw:.6f}",
+                f"{result.reproj_rmse:.6f}",
+                result.num_solutions,
+                result.detector,
+            ]
+        else:
+            row += [0, result.reason] + [""] * 8 + [
+                result.num_solutions,
+                result.detector,
+            ]
+        row += [os.path.basename(raw_path), os.path.basename(axis_path)]
+        self._writer.writerow(row)
+        self._file.flush()
+
+        if result.ok:
+            status = (
+                f"dist={result.distance:.4f}m "
+                f"rmse={result.reproj_rmse:.2f}px"
+            )
+        else:
+            status = f"FAILED: {result.reason}"
+        print(f"[capture] raw_{stem}.png  {status}  left={self.pending}")
+
+    # 关闭清单文件，并打印本次结果位置。
+    def close(self) -> None:
+        if self._file is not None:
+            self._file.close()
+            self._file = None
+            self._writer = None
+        if self.enabled:
+            print(
+                f"[capture] 本次 {self.count} 张，目录 {self.dir}，"
+                f"清单 {os.path.join(self.dir, 'capture.csv')}"
+            )
+
+
+# 触发拍照的按键：空格或 c（OpenCV 字体不含中文，提示用英文）。
+def _capture_key(key: int) -> bool:
+    return key in (32, ord("c"))
+
+
+# 在标注图左下角画一行拍照提示；只改显示副本，不影响原始帧和算法。
+def _draw_capture_hint(vis: np.ndarray, session: CaptureSession) -> None:
+    text = (
+        f"[capture] {session.group}  SPACE/c: shoot {session.burst}"
+        f"  next #{session.index + 1:03d}"
+    )
+    if session.pending > 0:
+        text += f"  left {session.pending}"
+    scale, thickness = 0.6, 2
+    size = cv2.getTextSize(text, FONT, scale, thickness)[0]
+    y = vis.shape[0] - 20
+    overlay = vis.copy()
+    cv2.rectangle(
+        overlay, (12, y - size[1] - 8), (28 + size[0], y + 10), (0, 0, 0), -1
+    )
+    cv2.addWeighted(overlay, 0.55, vis, 0.45, 0, vis)
+    cv2.putText(vis, text, (20, y), FONT, scale, (0, 255, 255), thickness, cv2.LINE_AA)
+
+
 # 图片模式：逐张处理、保存结果图、可选显示、写 CSV 和畸变对比。
 def run_images(
     args: argparse.Namespace,
@@ -1114,6 +1362,7 @@ def run_video(
     args: argparse.Namespace,
     calib: Calibration,
     logger: CsvLogger,
+    session: CaptureSession,
 ) -> None:
     # cap：视频读取器；先按路径打开。
     cap = cv2.VideoCapture(args.video)
@@ -1133,6 +1382,8 @@ def run_video(
     calib_v = scale_calibration(calib, frame_width, frame_height)
     # show：是否显示视频窗口；--headless 时只处理不显示。
     show = not args.headless
+    if session.enabled and not show and not session.auto:
+        print("[capture] --headless 下无法按键拍照；请开窗口，或加 --capture-auto 自动采集")
 
     if show:
         cv2.namedWindow("M2-2 Pose", cv2.WINDOW_NORMAL)
@@ -1194,11 +1445,15 @@ def run_video(
                     print(f"[video] frame={frame_index} {result.reason}")
 
             if show:
+                if session.enabled:
+                    _draw_capture_hint(vis, session)
                 cv2.imshow("M2-2 Pose", vis)
-                # key：q/Esc 退出，s 保存当前标注帧。
+                # key：q/Esc 退出，s 保存当前标注帧，空格/c 触发一组实拍。
                 key = cv2.waitKey(1) & 0xFF
                 if key in (27, ord("q")):
                     break
+                if _capture_key(key):
+                    session.trigger()
                 if key == ord("s"):
                     path = os.path.join(
                         args.save_dir,
@@ -1206,6 +1461,13 @@ def run_video(
                     )
                     write_image(path, vis)
                     print(f"[save] {path}")
+
+            # 连拍按帧推进：每轮最多拍一张，保证 5 张是 5 个不同的帧。
+            if session.ready(now):
+                session.save(frame, vis, result, now)
+            if session.auto_finished:
+                print("[capture] 自动采集完成，退出")
+                break
 
             frame_index += 1
     finally:
@@ -1217,6 +1479,7 @@ def run_camera(
     args: argparse.Namespace,
     calib: Calibration,
     logger: CsvLogger,
+    session: CaptureSession,
 ) -> None:
     # cap：摄像头读取器；优先用 V4L2 后端，失败再退回默认后端。
     cap = cv2.VideoCapture(args.camera, cv2.CAP_V4L2)
@@ -1253,6 +1516,8 @@ def run_camera(
     calib_cam = scale_calibration(calib, frame_width, frame_height)
     # show：是否显示摄像头窗口；--headless 时只处理不显示。
     show = not args.headless
+    if session.enabled and not show and not session.auto:
+        print("[capture] --headless 下无法按键拍照；请开窗口，或加 --capture-auto 自动采集")
 
     if show:
         _open_window(frame)
@@ -1305,11 +1570,15 @@ def run_camera(
                     print(f"[camera] frame={frame_index} {result.reason}")
 
             if show:
+                if session.enabled:
+                    _draw_capture_hint(vis, session)
                 cv2.imshow("M2-2 Pose", vis)
-                # key：q/Esc 退出，s 保存当前标注帧。
+                # key：q/Esc 退出，s 保存当前标注帧，空格/c 触发一组实拍。
                 key = cv2.waitKey(1) & 0xFF
                 if key in (27, ord("q")):
                     break
+                if _capture_key(key):
+                    session.trigger()
                 if key == ord("s"):
                     path = os.path.join(
                         args.save_dir,
@@ -1317,6 +1586,13 @@ def run_camera(
                     )
                     write_image(path, vis)
                     print(f"[save] {path}")
+
+            # 连拍按帧推进：每轮最多拍一张，保证 5 张是 5 个不同的帧。
+            if session.ready(now):
+                session.save(frame, vis, result, now)
+            if session.auto_finished:
+                print("[capture] 自动采集完成，退出")
+                break
 
             ok, frame = cap.read()
             if not ok or frame is None:
@@ -1338,14 +1614,29 @@ def main() -> None:
     # calib：从 M2-1 YAML 读到的标定参数；logger：按 --csv 创建日志器。
     calib = load_calibration(args.calib, args.square_mm)
     logger = CsvLogger(args.csv)
+
+    # 拍照只在实时/视频采集时才有意义；图片模式本来就是离线重算，直接忽略。
+    capture_group = args.capture_group
+    if args.image and capture_group:
+        print("[warn] 拍照只在 --camera / --video 模式生效，--image 模式已忽略")
+        capture_group = None
+    session = CaptureSession(
+        root=args.capture_dir,
+        group=capture_group,
+        truth=args.truth,
+        burst=args.capture_burst,
+        interval=args.capture_interval,
+        auto=args.capture_auto,
+    )
     try:
         if args.image:
             run_images(args, calib, logger)
         elif args.video:
-            run_video(args, calib, logger)
+            run_video(args, calib, logger, session)
         else:
-            run_camera(args, calib, logger)
+            run_camera(args, calib, logger, session)
     finally:
+        session.close()
         logger.close()
         cv2.destroyAllWindows()
         if args.csv:

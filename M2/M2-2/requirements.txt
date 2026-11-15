@@ -1,0 +1,6 @@
+# M2-2 运行依赖（Python 3.10 / OpenCV 5.0 与 WSL OpenCV 4.5.4 均验证过）
+# WSL Ubuntu2204 使用系统包 python3-opencv + python3-numpy，通常无需 pip 安装；
+# 其他环境执行：pip install -r requirements.txt
+# 不需要 PyYAML、不需要 GPU。
+opencv-python>=4.5.4
+numpy>=1.21

@@ -1,0 +1,84 @@
+{
+  "n_images": 8,
+  "cossim_min": 1.0,
+  "max_abs_diff": 0.0022125244140625,
+  "max_box_diff_px": 0.0002,
+  "max_conf_diff": 0.0,
+  "max_count_diff": 0,
+  "threshold_cossim": 0.99,
+  "detail": [
+    {
+      "image": "01489784aadbc707ca5b4a49f4dfd58e.jpg",
+      "cossim": 1.0,
+      "max_abs_diff": 0.0015869140625,
+      "boxes": 1,
+      "count_diff": 0,
+      "max_box_diff_px": 0.0001,
+      "max_conf_diff": 0.0
+    },
+    {
+      "image": "017e8c9939c4cbcf3747460bf2548ea7.jpg",
+      "cossim": 1.0,
+      "max_abs_diff": 0.001251220703125,
+      "boxes": 1,
+      "count_diff": 0,
+      "max_box_diff_px": 0.0001,
+      "max_conf_diff": 0.0
+    },
+    {
+      "image": "024a099c0b8ce9448aa1986f81376f64.jpg",
+      "cossim": 1.0,
+      "max_abs_diff": 0.0013580322265625,
+      "boxes": 1,
+      "count_diff": 0,
+      "max_box_diff_px": 0.0,
+      "max_conf_diff": 0.0
+    },
+    {
+      "image": "0452156ec1879f1d2b9a138c9a36e3f8.jpg",
+      "cossim": 1.0,
+      "max_abs_diff": 0.001434326171875,
+      "boxes": 1,
+      "count_diff": 0,
+      "max_box_diff_px": 0.0001,
+      "max_conf_diff": 0.0
+    },
+    {
+      "image": "052784da621ed7a1c573087a7decca6c.jpg",
+      "cossim": 1.0,
+      "max_abs_diff": 0.001495361328125,
+      "boxes": 1,
+      "count_diff": 0,
+      "max_box_diff_px": 0.0001,
+      "max_conf_diff": 0.0
+    },
+    {
+      "image": "088a1ef2a71dd37a1fa8977e33e8f73a.jpg",
+      "cossim": 1.0,
+      "max_abs_diff": 0.0022125244140625,
+      "boxes": 1,
+      "count_diff": 0,
+      "max_box_diff_px": 0.0002,
+      "max_conf_diff": 0.0
+    },
+    {
+      "image": "0a91cbcfb99e0ec898ecac954b871676.jpg",
+      "cossim": 1.0,
+      "max_abs_diff": 0.002105712890625,
+      "boxes": 1,
+      "count_diff": 0,
+      "max_box_diff_px": 0.0002,
+      "max_conf_diff": 0.0
+    },
+    {
+      "image": "0a9c7f656608638ed7fc5f07ab27915e.jpg",
+      "cossim": 1.0,
+      "max_abs_diff": 0.00128173828125,
+      "boxes": 1,
+      "count_diff": 0,
+      "max_box_diff_px": 0.0,
+      "max_conf_diff": 0.0
+    }
+  ],
+  "pass": true
+}

@@ -1,0 +1,8 @@
+2026-11-12 20:26:46 [启动] ON_WSL=True DISPLAY=:0 WAYLAND_DISPLAY=wayland-0 python=3.10.12
+2026-11-12 20:26:46 [启动] DISPLAY=:0 WAYLAND_DISPLAY=wayland-0
+2026-11-12 20:26:46 [窗口] viewable=1 mapped=1 geometry=1720x1040+426+213
+2026-11-12 20:26:47 [窗口] 1.5s: viewable=1 mapped=1 geometry=1720x1040+426+213 focus=.
+2026-11-12 20:51:38 [启动] ON_WSL=True DISPLAY=:0 WAYLAND_DISPLAY=wayland-0 python=3.10.12
+2026-11-12 20:51:38 [启动] DISPLAY=:0 WAYLAND_DISPLAY=wayland-0
+2026-11-12 20:51:38 [窗口] viewable=1 mapped=1 geometry=1720x1040+426+213
+2026-11-12 20:51:40 [窗口] 1.5s: viewable=1 mapped=1 geometry=1720x1040+426+213 focus=.
